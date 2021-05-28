@@ -1,0 +1,135 @@
+.messenger {
+	height: calc(100vh - 50px);
+	display: flex;
+}
+
+.messenger__menu {
+	flex: 0.25;
+	padding: 15px;
+	padding-bottom: 0;
+	padding-top: 0;
+	overflow-y: auto;
+	height: 100%;
+}
+
+.messenger__menu .rightbarFriend {
+	cursor: pointer;
+	transition: 0.25s;
+}
+
+.messenger__menu .rightbarFriend:hover {
+	background: rgba(202, 199, 199, 0.562);
+}
+
+.messenger__box {
+	height: 100%;
+	flex: 0.6;
+	display: flex;
+	background: #ddd;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.messenger__box-messages {
+	flex: 100%;
+	background: #ddd;
+	padding: 12px;
+	overflow-y: auto;
+	height: calc(100% - 80px);
+}
+
+.messenger__box-input {
+	flex: 50px;
+	background: white;
+}
+
+.messenger__box-input form {
+	display: flex;
+	/* width: 100%; */
+	padding: 0 5px;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.messenger__box-input form input {
+	flex: 1;
+	resize: none;
+	border: none;
+	outline: none;
+	padding: 8px;
+	height: 40px;
+	line-height: 1.5;
+}
+
+
+.messenger__box-btn {
+	/* appearance: unset;
+  background: transparent;
+  border: none;
+  outline: none;
+  width: auto;
+  cursor: pointer; */
+}
+
+.messenger__contact {
+	flex: 0.15;
+}
+
+/* --------------------- Message --------------------------- */
+.message {
+	max-width: 85%;
+	width: fit-content;
+	min-width: 30%;
+	background: #efefef;
+	padding: 12px;
+	border-radius: 12px;
+	margin-top: 12px;
+}
+
+.message.own {
+	background: rgb(62, 95, 240);
+	color: rgb(245, 245, 245);
+	margin-left: auto;
+}
+
+.message__header {
+	display: flex;
+	align-items: center;
+}
+
+.message__date {
+	margin-left: auto;
+	font-size: 12px;
+	margin-left: 8px;
+	color: #000;
+	opacity: 0.7;
+}
+
+.message__avatar {
+	width: 32px;
+	height: 32px;
+	border-radius: 6px;
+	object-fit: cover;
+	margin-right: 8px;
+}
+.message__body {
+	padding: 10px 5px;
+}
+
+.message__body p {
+	text-align: unset;
+}
+
+.messenger__contact-container {
+	padding: 12px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+.messenger__contact-img {
+	width: 140px;
+	height: 140px;
+	object-fit: cover;
+	border-radius: 12px;
+	margin-bottom: 8px;
+}

@@ -1,0 +1,47 @@
+.rightbarFriend {
+	display: flex;
+	align-items: center;
+	margin-bottom: 18px;
+	background: #b5b5b5;
+	padding: 10px;
+	border-radius: 18px;
+	box-shadow: 0 0 5px 10pxrgba (136, 136, 136, 0.568);
+}
+
+.rightbarProfileImgContainer {
+	margin-right: 10px;
+	position: relative;
+}
+
+.rightbarProfileImg {
+	width: 40px;
+	height: 40px;
+	border-radius: 10px;
+	object-fit: cover;
+}
+
+.rightbarStatus {
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	position: absolute;
+	bottom: -3px;
+	right: -3px;
+	border: 2px solid white;
+}
+
+.rightbarStatus.online {
+	background-color: limegreen;
+}
+
+.rightbarStatus.offline {
+	background-color: gray;
+}
+
+.rightbarUsername {
+	font-weight: 500;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+	width: 100px;
+}
