@@ -3,6 +3,7 @@ const app = express();
 const path = require('path');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser')
 const helmet = require('helmet');
 const morgan = require('morgan');
 const multer = require('multer');
@@ -41,6 +42,7 @@ const upload = multer({ storage });
 app.use(express.json());
 app.use(helmet());
 app.use(morgan('common'));
+app.use(cookieParser())
 app.use("/images",express.static(path.join(__dirname, 'public', 'images')));
 
 app.post('/api/upload', upload.single('file'), (req, res) => {
