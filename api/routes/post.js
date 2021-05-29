@@ -5,20 +5,18 @@ const postController = require('../controllers/post');
 const { verify } = require('../middlewares/auth');
 
 // create a post
-router.post('/', postController.createPost)
+router.post('/', verify, postController.createPost);
 // update a post
-router.put('/:id', postController.updatePost)
+router.put('/:id', verify, postController.updatePost);
 // delete a post
-router.delete('/:id', verify, postController.deletePost)
+router.delete('/:id', verify, postController.deletePost);
 // like/dislike  a post
-router.put('/:id/like', verify ,postController.likePost)
+router.put('/:id/like', verify, postController.likePost);
 // get a post
-router.get('/:id', postController.getPost)
+router.get('/post/:id', postController.getPost);
 // get timeLine post
-router.get('/timeline', postController.getTimelinePosts)
+router.get('/timeline',verify,  postController.getTimelinePosts);
 // get user's posts
-router.get('/profile/:username', postController.getUserPosts)
-
-
+router.get('/profile/:username', postController.getUserPosts);
 
 module.exports = router;

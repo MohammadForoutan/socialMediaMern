@@ -2,17 +2,18 @@ const express = require('express');
 const router = express.Router();
 
 const userController = require('../controllers/user')
+const {verify} = require('../middlewares/auth')
 
 // Update user
-router.put('/:id', userController.updateUser)
+router.put('/:id', verify ,userController.updateUser)
 // Delete user
-router.delete('/:id', userController.deleteUser)
+router.delete('/:id', verify,userController.deleteUser)
 // Get a user
 router.get('/', userController.getUser)
 // Follow a user
-router.put('/:id/follow', userController.followUser)
+router.put('/:id/follow', verify,userController.followUser)
 // UnFollow a user
-router.put('/:id/unfollow', userController.unFollowUser)
+router.put('/:id/unfollow', verify,userController.unFollowUser)
 // Get Followings
 router.get('/followings/:id', userController.getUserFollowings)
 

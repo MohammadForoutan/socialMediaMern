@@ -98,6 +98,7 @@ exports.getPost = async (req, res) => {
 
 exports.getTimelinePosts = async (req, res) => {
 	try {
+
 		// find currentUser
 		const currentUser = await User.findById(req.payload._id);
 
