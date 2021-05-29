@@ -22,6 +22,9 @@ const UserSchema = new Schema(
       min: 6,
       max: 80,
     },
+    refreshToken: {
+      type: String
+    },
     avatar: {
       type: String,
       default: "",
