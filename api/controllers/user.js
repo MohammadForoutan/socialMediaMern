@@ -118,13 +118,14 @@ exports.followUser = async (req, res) => {
 
 exports.unFollowUser = async (req, res) => {
 	try {
-		if (req.body.userId !== req.params.id) {
+		
+		if (req.payload._id.toString() !== req.params.id) {
 			const user = await User.findById(req.params.id);
-			const currentUser = await User.findById(req.body.userId);
+			const currentUser = await User.findById(req.payload._id);
 
-			const hasUserFollowed = user.followers.includes(req.body.userId);
+			const hasUserFollowed = user.followers.includes(req.payload._id);
 			if (hasUserFollowed) {
-				await user.updateOne({ $pull: { followers: req.body.userId } });
+				await user.updateOne({ $pull: { followers: req.payload._id } });
 				await currentUser.updateOne({
 					$pull: { followings: req.params.id }
 				});
@@ -152,7 +153,7 @@ exports.getUserFollowings = async (req, res) => {
 
 	try {
 		// find user
-		const user = await User.findById(id, '_id').populate({
+		const user = await User.findById(id).populate({
 			model: 'User',
 			path: 'followings',
 			select: 'username avatar'

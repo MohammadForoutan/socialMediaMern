@@ -13,6 +13,6 @@ exports.verify = async(req,res,next) => {
     req.payload = payload;
     next();
   } catch (err) {
-    return res.status(401).send();
+    return res.status(401).json("no authorization");
   }
 }
