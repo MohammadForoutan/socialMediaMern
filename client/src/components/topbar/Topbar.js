@@ -1,9 +1,28 @@
 import './topbar.css';
-import { Search, Notifications, Chat, Person } from '@material-ui/icons';
+import {
+	Search,
+	Notifications,
+	Chat,
+	Person,
+	Menu as MenuIcon,
+	Mail,
+	AccountCircle,
+	MoreVert
+} from '@material-ui/icons';
 import { Link, useHistory } from 'react-router-dom';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import { Logout } from '../../context/AuthActions';
+import {
+	AppBar,
+	Badge,
+	IconButton,
+	InputBase,
+	MenuItem,
+	Menu,
+	Toolbar,
+	Typography
+} from '@material-ui/core';
 
 function Topbar() {
 	const { user, dispatch } = useContext(AuthContext);
@@ -14,65 +33,180 @@ function Topbar() {
 		dispatch(Logout());
 		history.push('/login');
 	};
-	return (
-		<div className="topbar">
-			{/* logo */}
-			{user && (
-				<button className="topbar__logout-btn" onClick={handleLogout}>
-					Log out
-				</button>
-			)}
-			<div className="topbar__logo">
-				<Link to="/">LOGO</Link>
-			</div>
-			{/* searchbar */}
-			<div className="topbar__searchbar">
-				<div className="topbar__searchbar-icon">
-					<Search />
-				</div>
-				<input
-					className="topbar__searchbar-input"
-					type="text"
-					placeholder="search for user, music, video"
-				/>
-			</div>
 
+	const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+	const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
+
+	const isMenuOpen = Boolean(menuAnchorEl);
+	const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+	const handleProfileMenuOpen = (event) => {
+		setMenuAnchorEl(event.currentTarget);
+	};
+
+	const handleMobileMenuClose = () => {
+		setMobileMoreAnchorEl(null);
+	};
+
+	const handleMenuProfile = () => {
+		setMenuAnchorEl(null);
+		handleMobileMenuClose();
+		history.push(`/profile/${user.username}`);
+	};
+
+	const handleMenuClose = () => {
+		setMenuAnchorEl(null);
+		handleMobileMenuClose();
+	};
+
+	const handleMobileMenuOpen = (event) => {
+		setMobileMoreAnchorEl(event.currentTarget);
+	};
+
+	const menuId = 'primary-search-account-menu';
+	const renderMenu = (
+		<Menu
+			anchorEl={menuAnchorEl}
+			anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+			id={menuId}
+			keepMounted
+			transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+			open={isMenuOpen}
+			onClose={handleMenuClose}
+		>
 			{user && (
-				<div className="topbar__statusbar">
-					{/* <ul className="topbar__links">
-						<li>timeline</li>
-						<li>homepage</li>
-					</ul> */}
-					<div className="topbar__icons">
-						<div className="topbar__icon">
-							<Notifications />
-							<span className="topbar__icon-badge">1</span>
-						</div>
-						<div className="topbar__icon">
-							<Link to="/messenger">
-								<Chat />
-							</Link>
-							<span className="topbar__icon-badge">1</span>
-						</div>
-						<div className="topbar__icon">
-							<Person />
-							<span className="topbar__icon-badge">1</span>
-						</div>
-					</div>
-					<div className="topbar__avatar">
-						<Link to={`/profile/${user?.username}`}>
-							<img
-								src={
-									user?.avatar
-										? PF + user.avatar
-										: `${PF}person/defaultAvatar.jpeg`
-								}
-								alt="#"
-							/>
-						</Link>
-					</div>
-				</div>
+				<>
+					<MenuItem onClick={handleMenuProfile}>Profile</MenuItem>
+					<MenuItem
+						className="topbar__logout-btn"
+						onClick={handleLogout}
+					>
+						Log out
+					</MenuItem>
+				</>
 			)}
+		</Menu>
+	);
+
+	const mobileMenuId = 'primary-search-account-menu-mobile';
+	const renderMobileMenu = (
+		<Menu
+			anchorEl={mobileMoreAnchorEl}
+			anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+			id={mobileMenuId}
+			keepMounted
+			transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+			open={isMobileMenuOpen}
+			onClose={handleMobileMenuClose}
+		>
+			<MenuItem>
+				<IconButton aria-label="show 4 new mails" color="inherit">
+					<Badge badgeContent={4} color="secondary">
+						<Mail />
+					</Badge>
+				</IconButton>
+				<p>Messages</p>
+			</MenuItem>
+			<MenuItem>
+				<IconButton
+					aria-label="show 11 new notifications"
+					color="inherit"
+				>
+					<Badge badgeContent={11} color="secondary">
+						<Notifications />
+					</Badge>
+				</IconButton>
+				<p>Notifications</p>
+			</MenuItem>
+			<MenuItem onClick={handleProfileMenuOpen}>
+				<IconButton
+					aria-label="account of current user"
+					aria-controls="primary-search-account-menu"
+					aria-haspopup="true"
+					color="inherit"
+					onClick={handleMenuProfile}
+				>
+					<AccountCircle />
+				</IconButton>
+				<p>Profile</p>
+			</MenuItem>
+		</Menu>
+	);
+
+	return (
+		<div>
+			<AppBar position="static">
+				<Toolbar>
+					<IconButton
+						edge="start"
+						color="inherit"
+						aria-label="open drawer"
+					>
+						<MenuIcon />
+					</IconButton>
+					<Typography variant="h6" noWrap>
+						LOGO
+					</Typography>
+					<div className="search__container">
+						<div className="search__icon">
+							<Search />
+						</div>
+						<InputBase
+							className="search__input"
+							placeholder="Search…"
+							inputProps={{ 'aria-label': 'search' }}
+						/>
+					</div>
+					<div className="menu__divider" />
+					{user && (
+						<>
+							<div className="menu__mobile">
+								<IconButton
+									aria-label="show 4 new mails"
+									color="inherit"
+								>
+									<Badge badgeContent={4} color="secondary">
+										<Mail />
+									</Badge>
+								</IconButton>
+								<IconButton
+									aria-label="show 17 new notifications"
+									color="inherit"
+								>
+									<Badge badgeContent={17} color="secondary">
+										<Notifications />
+									</Badge>
+								</IconButton>
+								<IconButton
+									edge="end"
+									aria-label="account of current user"
+									aria-controls={menuId}
+									aria-haspopup="true"
+									onClick={handleProfileMenuOpen}
+									color="inherit"
+								>
+									<AccountCircle />
+								</IconButton>
+							</div>
+							<div className="menu__dot">
+								<IconButton
+									aria-label="show more"
+									aria-controls={mobileMenuId}
+									aria-haspopup="true"
+									onClick={handleMobileMenuOpen}
+									color="inherit"
+								>
+									<MoreVert />
+								</IconButton>
+							</div>
+							
+						</>
+					)}
+				</Toolbar>
+			</AppBar>
+
+			{user && renderMobileMenu}
+			{user && renderMenu}
 		</div>
 	);
 }

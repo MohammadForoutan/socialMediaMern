@@ -1,12 +1,24 @@
 import './post.css';
-import { Delete, MoreVert, ShareRounded, ThumbUp, ThumbUpAltOutlined } from '@material-ui/icons';
+import {
+	Delete,
+	MoreVert,
+	ShareRounded,
+	ThumbUp,
+	ThumbUpAltOutlined
+} from '@material-ui/icons';
 import { format } from 'timeago.js';
 import { useContext, useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
-import { IconButton, Menu, MenuItem } from '@material-ui/core';
-import Share from '../share/Share';
+import {
+	Avatar,
+	Card,
+	CardHeader,
+	IconButton,
+	Menu,
+	MenuItem
+} from '@material-ui/core';
 
 export default function Post({ post }) {
 	const [like, setLike] = useState(post.likes.length);
@@ -14,18 +26,18 @@ export default function Post({ post }) {
 	const [user] = useState(post.userId);
 	const { user: currentUser } = useContext(AuthContext);
 	const [anchorEl, setAnchorEl] = useState(null);
+	const history = useHistory();
 
 	const PF = process.env.REACT_APP_PUBLIC_FOLDER;
 
 	useEffect(() => {
 		const isLike = post.likes.some((like) => like === currentUser?._id);
-		console.log(currentUser?._id, post.likes[0]);
 		setIsLiked(isLike);
 	}, [post, currentUser?._id]);
 
 	const likeHandler = async () => {
 		try {
-			const response = await axios.put(`/posts/${post._id}/like`, {
+			await axios.put(`/posts/${post._id}/like`, {
 				userId: currentUser._id
 			});
 
@@ -44,74 +56,63 @@ export default function Post({ post }) {
 		setAnchorEl(e.currentTarget);
 	};
 
-	const handleDeletePost = async() => {
+	const handleDeletePost = async () => {
 		try {
-			const response = await axios.delete(`/posts/${post._id}`, {
+			await axios.delete(`/posts/${post._id}`, {
 				data: {
 					userId: currentUser._id
 				}
-			})
+			});
 
-			window.location.reload();
-			
+			// go login page and then redirect to home
+			history.push('/login');
 
 			handleClosePostOptions();
-			// console.log(reponse.data)
 		} catch (err) {
-			console.log(err)
+			console.log(err);
 		}
-	}
+	};
 
 	return (
-		<div className="post">
-			<div className="post__top">
-				<div className="post__top-left">
+		<Card className="post">
+			<CardHeader
+				avatar={
 					<Link to={`/profile/${user.username}`}>
-						<div className="post__user-info">
-							<img
-								className="post__profile-img"
-								src={
-									user.avatar
-										? PF + user.avatar
-										: `${PF}person/defaultAvatar.jpeg`
-								}
-								alt=""
-							/>
-							<span className="post__username">
-								{user.username}
-							</span>
-						</div>
+						<Avatar src={PF + user.avatar} alt={user.username} />
 					</Link>
-					<span className="post__date">{format(post.createdAt)}</span>
-				</div>
-				<div className="post__top-right">
-					<IconButton
-						aria-controls="simple-menu"
-						aria-haspopup="true"
-						onClick={handlePostOptions}
-					>
+				}
+				action={
+					<IconButton	onClick={handlePostOptions}>
 						<MoreVert />
 					</IconButton>
-					<Menu
+				}
+				title={
+					<Link to={`/profile/${user.username}`}>
+						{user.username}
+					</Link>
+				}
+				subheader={format(post.createdAt)}
+			/>
+			<Menu
 						id="simple-menu"
 						anchorEl={anchorEl}
 						keepMounted
 						open={Boolean(anchorEl)}
 						onClose={handleClosePostOptions}
 					>
-						{user._id === currentUser._id && (
+						{user?._id === currentUser?._id && (
 							<MenuItem onClick={handleDeletePost}>
 								delete <Delete color="secondary" />
 							</MenuItem>
 						)}
 						<MenuItem onClick={handleClosePostOptions}>
-							share  <ShareRounded />
+							share <ShareRounded />
 						</MenuItem>
 					</Menu>
-				</div>
-			</div>
 			<div className="post__center">
-				{post?.description && <p className="post__text">{post?.description}</p>}
+				{post?.description && (
+					<p className="post__text">{post?.description}</p>
+				)}
 				<img className="post__img" src={PF + post?.image} alt="" />
 			</div>
 			<div className="post__bottom">
@@ -120,9 +121,14 @@ export default function Post({ post }) {
 						{isLiked ? (
 							<ThumbUp color="primary" onClick={likeHandler} />
 						) : (
-							<ThumbUpAltOutlined color="primary" onClick={likeHandler} />
+							<ThumbUpAltOutlined
+								color="primary"
+								onClick={likeHandler}
+							/>
 						)}
-						<span className="post__like-text">{like} people like it</span>
+						<span className="post__like-text">
+							{like} people like it
+						</span>
 					</span>
 				</div>
 				<div className="post__bottom-right">
@@ -131,6 +137,6 @@ export default function Post({ post }) {
 					</span>
 				</div>
 			</div>
-		</div>
+		</Card>
 	);
 }

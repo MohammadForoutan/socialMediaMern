@@ -2,10 +2,10 @@ import './register.css';
 import { useRef } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
+import { Button, Container, Grid, TextField } from '@material-ui/core';
 
 export default function Register() {
-  const history = useHistory();
-
+	const history = useHistory();
 
 	const usernameRef = useRef();
 	const emailRef = useRef();
@@ -26,13 +26,13 @@ export default function Register() {
 		}
 
 		try {
-			const response = await axios.post('auth/register', {
+			await axios.post('auth/register', {
 				username,
 				email,
 				password
 			});
 
-      history.push('/login')
+			history.push('/login');
 		} catch (err) {
 			console.log(err);
 		}
@@ -40,63 +40,96 @@ export default function Register() {
 
 	return (
 		<div className="login">
-			<div className="login__container">
-				<div className="login__left">
-					<h3 className="login__logo">LOGO </h3>
-					<span className="login__desc">
-						Connect with friends and the world around you on LOGO.
-					</span>
-				</div>
+			<Container>
+				<Grid container className="login__container">
+					<Grid item xs={12} sm={6}>
+						<h3 className="login__logo">LOGO </h3>
+						<span className="login__desc">
+							Connect with friends and the world around you on
+							LOGO.
+						</span>
+					</Grid>
+					<Grid item xs={12} sm={6}>
+						<form onSubmit={handleSubmitRegisterForm}>
+							<div className="login__input">
+								<TextField
+									label="Username"
+									type="text"
+									placeholder="Enter your username"
+									InputLabelProps={{
+										shrink: true
+									}}
+									variant="outlined"
+									inputRef={usernameRef}
+									required={true}
+								/>
+							</div>
 
-				<div className="login__right">
-					<form
-						onSubmit={handleSubmitRegisterForm}
-						className="login__box"
-					>
-						<input
-							placeholder="Username"
-							className="login__input"
-							ref={usernameRef}
-							type="text"
-							required={true}
-						/>
+							<div className="login__input">
+								<TextField
+									label="Email"
+									type="email"
+									placeholder="Enter your email"
+									InputLabelProps={{
+										shrink: true
+									}}
+									variant="outlined"
+									inputRef={emailRef}
+									required={true}
+								/>
+							</div>
 
-						<input
-							placeholder="Email"
-							className="login__input"
-							ref={emailRef}
-							type="email"
-							required={true}
-						/>
+							<div className="login__input">
+								<TextField
+									label="Password"
+									type="password"
+									placeholder="Enter your password"
+									InputLabelProps={{
+										shrink: true
+									}}
+									variant="outlined"
+									inputRef={passwordRef}
+									required={true}
+								/>
+							</div>
 
-						<input
-							placeholder="Password"
-							className="login__input"
-							ref={passwordRef}
-							type="password"
-							required={true}
-							minLength={6}
-						/>
+							<div className="login__input">
+								<TextField
+									label="Confim Password"
+									type="password"
+									placeholder="Enter your password again"
+									InputLabelProps={{
+										shrink: true
+									}}
+									variant="outlined"
+									inputRef={confirmPasswordRef}
+									required={true}
+								/>
+							</div>
 
-						<input
-							placeholder="ConfirmPassword"
-							className="login__input"
-							ref={confirmPasswordRef}
-							type="password"
-							required={true}
-							minLength={6}
-						/>
+							<Button
+								type="submit"
+								variant="contained"
+								color="primary"
+							>
+								Sign Up
+							</Button>
 
-						<button className="login__btn" type="submit">
-							Sign Up
-						</button>
-
-						<Link to="/login" className="login__register-btn">
-							Log into Account
-						</Link>
-					</form>
-				</div>
-			</div>
+							<br />
+							<br />
+							<Link to="/login">
+								<Button
+									type="submit"
+									variant="outlined"
+									color="secondary"
+								>
+									Log into Account
+								</Button>
+							</Link>
+						</form>
+					</Grid>
+				</Grid>
+			</Container>
 		</div>
 	);
 }

@@ -83,42 +83,37 @@
 .share__option{
     display: flex;
     align-items: center;
-    padding: 3px 5px;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 4px;
     transition: 125ms;
+    background: rgb(42, 133, 236);
+
+
 }
 
 .share__option:last-child {
   margin-right: auto;
 }
 
-.share__option:hover {
-  background: rgba(221, 221, 221, 0.288);
-}
 
 
 .share__icon{
-    font-size: 18px;
+    /* font-size: 18px; */
     margin-right: 3px;
 }
 
 .share__option-text{
-    font-size: 14px;
+  font-size: 15px;
     font-weight: 500;
+    color: whitesmoke;
+    text-transform: capitalize;
 }
 
-.share__btn{
-    border: none;
-    padding: 7px 12px;
-    border-radius: 2px;
-    margin-left: auto;
-    background-color: royalblue;
-    font-weight: 700;
-    cursor: pointer;
-    color: white;
-}
 
-.share__btn:hover {
-  background-color: royalblue;
+.share__file-btn {
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  cursor: pointer;
+  color: rgb(143, 132, 132)
 }

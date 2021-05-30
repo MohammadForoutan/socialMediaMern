@@ -17,7 +17,7 @@ function Feed({ username }) {
     } else {
       fetchUserTimline()
     }
-	}, [username, user?._id]);
+	}, [username]);
 
   
 	const fetchUserPosts = async() => {
@@ -27,7 +27,7 @@ function Feed({ username }) {
 
 	const fetchUserTimline = async () => {
 		const response = await axios.get(
-			`posts/timeline/${user._id}`
+			`/posts/timeline`
 		);
 		setPosts(response.data);
 	};
@@ -37,7 +37,7 @@ function Feed({ username }) {
 			{(!username || username === user?.username) && <Share />}
 			{posts.map((post) => {
 				// if no post found
-				if (!Boolean(post.userId)) return;
+				// if (!Boolean(post.userId)) return;
 				return (<Post key={post._id} post={post} />);
 			})}
 		</div>

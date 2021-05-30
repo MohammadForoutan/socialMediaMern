@@ -1,11 +1,34 @@
 import './rightbar.css';
-import { Users } from '../../dummyData';
 import { useContext, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
-import Online from '../online/Online';
 import { AuthContext } from '../../context/AuthContext';
-import { Add, Remove, VerticalAlignBottom } from '@material-ui/icons';
+import {
+	Add,
+	BeachAccess,
+	Home,
+	Image,
+	LocationOn,
+	MoreVertRounded,
+	Remove,
+	ShareRounded,
+	Wc,
+	Work
+} from '@material-ui/icons';
+import {
+	Avatar,
+	Button,
+	Card,
+	CardHeader,
+	Divider,
+	IconButton,
+	List,
+	ListItem,
+	ListItemAvatar,
+	ListItemText,
+	Menu,
+	MenuItem
+} from '@material-ui/core';
 
 export default function Rightbar({ user }) {
 	const PF = process.env.REACT_APP_PUBLIC_FOLDER;
@@ -13,39 +36,91 @@ export default function Rightbar({ user }) {
 
 	const HomeRightbar = () => {
 		const PF = process.env.REACT_APP_PUBLIC_FOLDER;
-		const [conversations, setConverSations] = useState([]);
+		const [followings, setFollowings] = useState([]);
+		const { user } = useContext(AuthContext);
+		const [anchorEl, setAnchorEl] = useState(null);
+		const history = useHistory();
 
-		const fetchConversations = async () => {
+		const handleCloseFollowingOptions = () => {
+			setAnchorEl(null);
+		};
+
+		const handleFollowingOptions = (e) => {
+			setAnchorEl(e.currentTarget);
+		};
+
+		const handleUnfollowUser = async (e) => {
 			try {
-				const response = await axios.get(
-					`/conversations/${currentUser._id}`
-				);
-				setConverSations(response.data);
-				console.log(response.data);
+				const followingId = e.currentTarget.getAttribute('userId');
+				await axios.put(`/users/${followingId}/unfollow`);
+
+				// go login page and then redirect to home
+				history.push('/login');
+
+				handleCloseFollowingOptions();
 			} catch (err) {
 				console.log(err);
 			}
 		};
+		const fetchFollowings = async () => {
+			try {
+				const response = await axios.get(
+					`/users/followings/${user._id}`
+				);
+				setFollowings(response.data);
+			} catch (err) {
+				console.log(err);
+			}
+		};
+
 		useEffect(() => {
-			fetchConversations();
-		}, []);
+			fetchFollowings();
+		}, [user]);
+
 		return (
-			<>
-				<h4 className="rightbar__title">Followings</h4>
-				<ul className="rightbar__friends">
-					{conversations.map((conversation) => (
-						<Link to={`/profile/${conversation?.members.find(member => member._id !== currentUser._id).username}`} >
-						<Online
-							key={conversation._id}
-							conversation={conversation}
-							currentUser={currentUser}
-							online={true}
-							showOnline={false}
+			<Card className="righbar__card">
+				<h4>Followings</h4>
+				{followings.map((following) => (
+					<>
+					<Link>
+					<CardHeader
+							key={following._id}
+							avatar={
+								<Avatar
+									src={following.avatar || following.username}
+									alt={following.username}
+								/>
+							}
+							action={
+								<IconButton
+									aria-controls="following-menu"
+									onClick={handleFollowingOptions}
+								>
+									<MoreVertRounded />
+								</IconButton>
+							}
+							title={following.username}
+							//  subheader="September 14, 2016"
 						/>
 					</Link>
-					))}
-				</ul>
-			</>
+						
+					<Menu
+							id="following-menu"
+							anchorEl={anchorEl}
+							keepMounted
+							open={Boolean(anchorEl)}
+							onClose={handleCloseFollowingOptions}
+						>
+							<MenuItem
+								userId={following._id}
+								onClick={handleUnfollowUser}
+							>
+								unfollow <Remove color="secondary" />
+							</MenuItem>
+						</Menu>
+					</>
+				))}
+			</Card>
 		);
 	};
 
@@ -55,7 +130,7 @@ export default function Rightbar({ user }) {
 		const [followed, setFollowed] = useState(false);
 
 		const fetchFollowings = async () => {
-			if (!user._id) return;
+			if (!user?._id) return;
 			const response = await axios.get(`/users/followings/${user._id}`);
 			setFollowings(response.data);
 		};
@@ -64,7 +139,7 @@ export default function Rightbar({ user }) {
 			fetchFollowings();
 			const isFollowed = user?.followers?.includes(currentUser?._id);
 			setFollowed(isFollowed);
-		}, [user._id]);
+		}, [user]);
 
 		const handleFollowUser = async () => {
 			try {
@@ -95,70 +170,83 @@ export default function Rightbar({ user }) {
 		return (
 			<>
 				{user.username !== currentUser?.username && (
-					<button
-						className="righbar__follow-btn"
-						onClick={handleFollowUser}
-					>
-						{followed ? 'unfollow' : 'follow'}
-						{followed ? <Remove /> : <Add />}
-					</button>
+					<>
+						<Button
+							color={followed ? 'secondary' : 'primary'}
+							variant="contained"
+							className="righbar__follow-btn"
+							onClick={handleFollowUser}
+						>
+							{followed ? 'unfollow' : 'follow'}
+							{followed ? <Remove /> : <Add />}
+						</Button>
+						<br />
+						<br />
+					</>
 				)}
-				<h4 className="rightbar__title">User information</h4>
-				<div className="rightbar__info">
-					<div className="rightbar__info-item">
-						<span className="rightbar__info-key">City:</span>
-						<span className="rightbar__info-value">
-							{user.city}
-						</span>
-					</div>
-					<div className="rightbar__info-item">
-						<span className="rightbar__info-key">From:</span>
-						<span className="rightbar__info-value">
-							{user.from}
-						</span>
-					</div>
-					<div className="rightbar__info-item">
-						<span className="rightbar__info-key">
-							Relationship:
-						</span>
-						<span className="rightbar__info-value">
-							{user.relationship}
-						</span>
-					</div>
-				</div>
-				<h4 className="rightbar__title">followings users</h4>
-				<div className="rightbar__followings">
+				<Card>
+					<List>
+						<ListItem>
+							<ListItemAvatar>
+								<Avatar>
+									<LocationOn />
+								</Avatar>
+							</ListItemAvatar>
+							<ListItemText primary={user.city} />
+						</ListItem>
+						<ListItem>
+							<ListItemAvatar>
+								<Avatar>
+									<Home />
+								</Avatar>
+							</ListItemAvatar>
+							<ListItemText primary={user.from} />
+						</ListItem>
+						<ListItem>
+							<ListItemAvatar>
+								<Avatar>
+									<Wc />
+								</Avatar>
+							</ListItemAvatar>
+							<ListItemText primary={user.relationship} />
+						</ListItem>
+					</List>
+				</Card>
+
+				<br />
+				<Divider />
+				<br />
+
+				<Card>
+					<CardHeader title="Following Users" />
 					{followings.map((following) => (
-						<div key={following._id}>
-							<Link
-								to={`/profile/${following.username}`}
-								className="rightbar__following"
-							>
-								<img
-									src={
-										following.avatar
-											? PF + following.avatar
-											: PF + 'person/defaultAvatar.jpeg'
-									}
-									alt=""
-									className="rightbar__following-img"
-								/>
-								<span className="rightbar__following-name">
-									{following.username}
-								</span>
-							</Link>
-						</div>
+						<Link
+							key={following._id}
+							to={`/profile/${following.username}`}
+						>
+							<CardHeader
+								avatar={
+									<Avatar
+										src={
+											following.avatar ||
+											following.username
+										}
+										alt={following.username}
+									/>
+								}
+								title={following.username}
+								//  subheader="September 14, 2016"
+							/>
+						</Link>
 					))}
-				</div>
+				</Card>
 			</>
 		);
 	};
 
 	return (
 		<div className="rightbar">
-			<div className="righbar__container">
-				{user ? <ProfileRightbar /> : <HomeRightbar />}
-			</div>
+			{user ? <ProfileRightbar /> : <HomeRightbar />}
 		</div>
 	);
 }

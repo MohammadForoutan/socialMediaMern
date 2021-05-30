@@ -157,13 +157,16 @@ export default function Profile() {
 				<div className="profile__right">
 					<div className="profile__right-top">
 						<div className="profile__cover">
-							{user._id === currentUser._id && (
-								<button
+							{user?._id === currentUser?._id && (
+								<Button
 									className="profile__cover-change-btn"
 									onClick={handleOpenEditProfile}
+									color="primary"
+									variant="contained"
 								>
-									<Edit /> <span>Edit Profile</span>
-								</button>
+									<Edit /> &nbsp;&nbsp;
+									<span>Edit profile</span>
+								</Button>
 							)}
 							<img
 								className="profile__cover-img"
@@ -217,6 +220,7 @@ export default function Profile() {
 						<Button
 							autoFocus
 							color="inherit"
+							variant="outlined"
 							onClick={handleCloseEditProfile}
 							edge="start"
 						>

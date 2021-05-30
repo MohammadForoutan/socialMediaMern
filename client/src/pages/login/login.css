@@ -1,24 +1,24 @@
 .login {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  max-width: 100vw;
+  min-height: 100vh;
   background-color: #f0f2f5;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
+
 .login__container {
-  width: 70%;
-  height: 70%;
-  display: flex;
+  max-width: 1500px;
 }
 
-.login__left,
-.login__right {
+.login__form {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+}
+
+.login__text {
+  flex: 1;
 }
 
 .login__logo {
@@ -33,52 +33,9 @@
 }
 
 .login__box{
-    height: 300px;
-    padding: 20px;
-    background-color: white;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    
 }
 
-.login__input{
-    height: 50px;
-    border-radius: 10px;
-    border: 1px solid gray;
-    font-size: 18px;
-    padding-left: 20px;
-}
-
-.login__input:focus{
-    outline: none;
-}
-
-.login__btn{
-    height: 50px;
-    border-radius: 10px;
-    border: none;
-    background-color: #1775ee;
-    color: white;
-    font-size: 20px;
-    font-weight: 500;
-    cursor: pointer;
-}
-
-.login__forgot{
-    text-align: center;
-    color: #1775ee;
-}
-
-.login__register-btn{
-    width: 60%;
-    align-self: center;
-    height: 50px;
-    border-radius: 10px;
-    border: none;
-    background-color: #42b72a;
-    color: white;
-    font-size: 20px;
-    font-weight: 500;
-    cursor: pointer;
+.login__input {
+  margin-bottom: 18px;
 }

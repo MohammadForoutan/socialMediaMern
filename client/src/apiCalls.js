@@ -8,5 +8,6 @@ export const loginCall = async (userData, dispatch) => {
 		localStorage.setItem('user', JSON.stringify(response.data))
 	} catch (err) {
 		dispatch({ type: 'LOGIN_FAILURE', payload: err });
+		console.log(err)
 	}
 };
