@@ -102,7 +102,7 @@ exports.followUser = async (req, res) => {
 		}
 
 		// update target user followers
-		await user.updateOne({ $push: { followers: req.body.userId } });
+		await user.updateOne({ $push: { followers: req.paload._id } });
 		// update current user followings
 		await currentUser.updateOne({
 			$push: { followings: req.params.id }

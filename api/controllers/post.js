@@ -68,14 +68,14 @@ exports.likePost = async (req, res) => {
 		// if hasn't like
 		if (!hasLike) {
 			// update - add like
-			await post.updateOne({ $push: { likes: req.body.userId } });
+			await post.updateOne({ $push: { likes: req.payload._id } });
 			// send response
 			res.status(200).json('post has been liked');
 		} 
 		// if already like
 		else {
 			// update - remove like
-			await post.updateOne({ $pull: { likes: req.body.userId } });
+			await post.updateOne({ $pull: { likes: req.payload._id } });
 			// send response
 			res.status(200).json('post has been disliked');
 		}
