@@ -1,5 +1,5 @@
 .messenger {
-	height: calc(100vh - 50px);
+	height: calc(100vh - 64px);
 	display: flex;
 }
 
@@ -23,11 +23,19 @@
 
 .messenger__box {
 	height: 100%;
-	flex: 0.6;
+	flex: 1;
 	display: flex;
 	background: #ddd;
 	flex-direction: column;
 	justify-content: space-between;
+}
+
+.messenger__box--default {
+	font-size: 45px;
+	color: #aaa;
+	padding: 20px;
+	font-weight: 800;
+	text-align: center;
 }
 
 .messenger__box-messages {
@@ -35,7 +43,7 @@
 	background: #ddd;
 	padding: 12px;
 	overflow-y: auto;
-	height: calc(100% - 80px);
+	height: calc(100% - 64px);
 }
 
 .messenger__box-input {
@@ -72,7 +80,10 @@
 }
 
 .messenger__contact {
-	flex: 0.15;
+	flex: 0.3;
+	border-left: 2px solid #ccc;
+	max-height: 100%;
+	overflow: auto;
 }
 
 /* --------------------- Message --------------------------- */
@@ -84,6 +95,7 @@
 	padding: 12px;
 	border-radius: 12px;
 	margin-top: 12px;
+	margin-bottom: 10px;
 }
 
 .message.own {
@@ -121,14 +133,18 @@
 }
 
 .messenger__contact-container {
-	padding: 12px;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 }
+
+.messenger__contact-info {
+	width: 100%;
+}
+
 .messenger__contact-img {
-	width: 140px;
-	height: 140px;
+	margin-top: 12px;
+	max-width: 80%;
 	object-fit: cover;
 	border-radius: 12px;
 	margin-bottom: 8px;

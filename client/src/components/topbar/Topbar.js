@@ -144,9 +144,11 @@ function Topbar() {
 					>
 						<MenuIcon />
 					</IconButton>
-					<Typography variant="h6" noWrap>
-						LOGO
-					</Typography>
+					<Link to="/" className="primary-color ">
+						<Typography variant="5" noWrap>
+							LOGO
+						</Typography>
+					</Link>
 					<div className="search__container">
 						<div className="search__icon">
 							<Search />
@@ -161,14 +163,22 @@ function Topbar() {
 					{user && (
 						<>
 							<div className="menu__mobile">
-								<IconButton
-									aria-label="show 4 new mails"
-									color="inherit"
+								<Link
+									to={`/messenger`}
+									className="primary-color "
 								>
-									<Badge badgeContent={4} color="secondary">
-										<Mail />
-									</Badge>
-								</IconButton>
+									<IconButton
+										aria-label="show 4 new mails"
+										color="inherit"
+									>
+										<Badge
+											badgeContent={4}
+											color="secondary"
+										>
+											<Mail />
+										</Badge>
+									</IconButton>
+								</Link>
 								<IconButton
 									aria-label="show 17 new notifications"
 									color="inherit"
@@ -199,7 +209,6 @@ function Topbar() {
 									<MoreVert />
 								</IconButton>
 							</div>
-							
 						</>
 					)}
 				</Toolbar>

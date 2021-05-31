@@ -7,7 +7,7 @@ import { useContext, useRef, useState } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import axios from 'axios';
 import { useHistory } from 'react-router';
-import { Button, Card, Divider, Grid } from '@material-ui/core';
+import { Avatar, Button, Card, Divider, Grid } from '@material-ui/core';
 
 export default function Share() {
 	const PF = process.env.REACT_APP_PUBLIC_FOLDER;
@@ -53,8 +53,8 @@ export default function Share() {
 		<>
 		<Card className="share">
 			<Grid container>
-				<Grid item xs={2}>
-					<img
+				<Grid item xs={1}>
+					<Avatar
 						className="share__img"
 						src={
 							user.avatar
@@ -64,7 +64,7 @@ export default function Share() {
 						alt={user?.username || 'avatar'}
 					/>
 				</Grid>
-				<Grid item xs={10}>
+				<Grid item xs={11}>
 					<form
 						className="share__container"
 						onSubmit={handleSubmitShare}

@@ -82,29 +82,33 @@ export default function Rightbar({ user }) {
 				<h4>Followings</h4>
 				{followings.map((following) => (
 					<>
-					<Link>
-					<CardHeader
-							key={following._id}
-							avatar={
-								<Avatar
-									src={following.avatar || following.username}
-									alt={following.username}
-								/>
-							}
-							action={
-								<IconButton
-									aria-controls="following-menu"
-									onClick={handleFollowingOptions}
-								>
-									<MoreVertRounded />
-								</IconButton>
-							}
-							title={following.username}
-							//  subheader="September 14, 2016"
-						/>
-					</Link>
-						
-					<Menu
+						<Link>
+							<CardHeader
+								key={following._id}
+								avatar={
+									<Avatar
+										src={
+											following.avatar
+												? PF + following.avatar
+												: following.username
+										}
+										alt={following.username}
+									/>
+								}
+								action={
+									<IconButton
+										aria-controls="following-menu"
+										onClick={handleFollowingOptions}
+									>
+										<MoreVertRounded />
+									</IconButton>
+								}
+								title={following.username}
+								//  subheader="September 14, 2016"
+							/>
+						</Link>
+
+						<Menu
 							id="following-menu"
 							anchorEl={anchorEl}
 							keepMounted
@@ -150,7 +154,6 @@ export default function Rightbar({ user }) {
 							userId: currentUser._id
 						}
 					);
-					console.log(response.data);
 					setFollowed(false);
 				} else {
 					const response = await axios.put(
@@ -228,8 +231,9 @@ export default function Rightbar({ user }) {
 								avatar={
 									<Avatar
 										src={
-											following.avatar ||
-											following.username
+											following.avatar
+												? PF + following.avatar
+												: following.username
 										}
 										alt={following.username}
 									/>

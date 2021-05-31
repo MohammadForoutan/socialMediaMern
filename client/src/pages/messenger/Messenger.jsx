@@ -1,9 +1,8 @@
 import Topbar from '../../components/topbar/Topbar';
 import './messenger.css';
 import Online from '../../components/online/Online';
-import { Users } from '../../dummyData';
-import { IconButton } from '@material-ui/core';
-import { AttachFile, Send } from '@material-ui/icons';
+import { Avatar, IconButton, List, ListItem, ListItemAvatar, ListItemText } from '@material-ui/core';
+import { AlternateEmail, AttachFile, Home, LocationOn, Send, Wc } from '@material-ui/icons';
 import Message from '../../components/message/Message';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { AuthContext } from '../../context/AuthContext';
@@ -18,7 +17,7 @@ export default function Messenger() {
 	const [newMessage, setNewMessage] = useState('');
 	const [arrivalMessage, setArrivalMessage] = useState(null);
 	const [currentContact, setCurrentContact] = useState(null);
-	const [onlineUsers, setOnlineUsers] = useState([])
+	const [onlineUsers, setOnlineUsers] = useState([]);
 	const { user: currentUser } = useContext(AuthContext);
 	const scrollRef = useRef();
 	const socket = useRef();
@@ -82,15 +81,13 @@ export default function Messenger() {
 		// 		createdAt: Date.now()
 		// 	});
 		// });
-
 	}, []);
 
 	useEffect(() => {
 		socket.current.emit('addUser', currentUser._id);
 		socket.current.on('getUsers', (users) => {
-			setOnlineUsers(users)
+			setOnlineUsers(users);
 		});
-
 	}, [currentUser]);
 
 	useEffect(() => {
@@ -99,8 +96,7 @@ export default function Messenger() {
 				(member) => member._id === arrivalMessage.sender
 			) &&
 			setMessages((prev) => [...prev, arrivalMessage]);
-			// setMessages([...messages, arrivalMessage]);
-			
+		// setMessages([...messages, arrivalMessage]);
 	}, [arrivalMessage, currentConversation]);
 
 	useEffect(() => {
@@ -112,7 +108,6 @@ export default function Messenger() {
 				createdAt: Date.now()
 			});
 		});
-
 	}, [currentUser._id]);
 
 	useEffect(() => {
@@ -140,7 +135,7 @@ export default function Messenger() {
 						<div
 							onClick={() => setCurrentConversation(conversation)}
 							key={conversation._id}
-							>
+						>
 							<Online
 								key={conversation._id}
 								conversation={conversation}
@@ -194,10 +189,10 @@ export default function Messenger() {
 						</div>
 					</>
 				) : (
-					<p className="messenger__box">Choose a Conversation</p>
+					<p className="messenger__box messenger__box--default">Choose a Conversation</p>
 				)}
-				<div className="messenger__contact">
 					{currentContact ? (
+				<div className="messenger__contact">
 						<div className="messenger__contact-container">
 							<img
 								className="messenger__contact-img"
@@ -208,16 +203,42 @@ export default function Messenger() {
 								}
 								alt=""
 							/>
-							<p>{currentContact.username}</p>
-							{currentContact.city && <p>city: {currentContact.city}</p>}
-							{currentContact.from && <p>from: {currentContact.from}</p>}
-							{currentContact.relationship && <p>relationship: {currentContact.relationship}</p>}
-							<small>more detail later</small>
+							<List className="messenger__contact-info">
+							<ListItem>
+							<ListItemAvatar>
+								<Avatar>
+									<AlternateEmail />
+								</Avatar>
+							</ListItemAvatar>
+							<ListItemText primary={currentContact.username} />
+						</ListItem>
+						<ListItem>
+							<ListItemAvatar>
+								<Avatar>
+									<LocationOn />
+								</Avatar>
+							</ListItemAvatar>
+							<ListItemText primary={currentContact.city} />
+						</ListItem>
+						<ListItem>
+							<ListItemAvatar>
+								<Avatar>
+									<Home />
+								</Avatar>
+							</ListItemAvatar>
+							<ListItemText primary={currentContact.from} />
+						</ListItem>
+						<ListItem>
+							<ListItemAvatar>
+								<Avatar>
+									<Wc />
+								</Avatar>
+							</ListItemAvatar>
+							<ListItemText primary={currentContact.relationship} />
+						</ListItem>
+					</List>
 						</div>
-					) : (
-						'select a user'
-					)}
-				</div>
+				</div>) : null}
 			</div>
 		</>
 	);
