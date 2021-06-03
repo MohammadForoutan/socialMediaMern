@@ -7,7 +7,8 @@ import {
 	Menu as MenuIcon,
 	Mail,
 	AccountCircle,
-	MoreVert
+	MoreVert,
+	Close
 } from '@material-ui/icons';
 import { Link, useHistory } from 'react-router-dom';
 import { useContext, useState } from 'react';
@@ -26,7 +27,8 @@ import {
 	ListItem,
 	ListItemAvatar,
 	Avatar,
-	ListItemText
+	ListItemText,
+	Button
 } from '@material-ui/core';
 import axios from 'axios';
 
@@ -188,6 +190,7 @@ function Topbar() {
 
 						{searchResults?.length > 0 && (
 							<List className="search__results">
+								<Button className="search__results--remove" onClick={() => setSearchResults([])}><Close/></Button>
 								{searchResults?.map((searchResult) => (
 									<Link key={searchResult._id} to={`/profile/${searchResult.username}`}>
 										<ListItem>
