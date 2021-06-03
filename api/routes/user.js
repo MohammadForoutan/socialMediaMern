@@ -10,6 +10,8 @@ router.put('/:id', verify ,userController.updateUser)
 router.delete('/:id', verify,userController.deleteUser)
 // Get a user
 router.get('/', userController.getUser)
+// search along users
+router.get('/search', userController.searchUsers)
 // Follow a user
 router.put('/:id/follow', verify,userController.followUser)
 // UnFollow a user

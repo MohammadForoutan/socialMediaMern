@@ -62,7 +62,7 @@ exports.loginUser = async (req, res) => {
 		const refreshToken = await jwt.sign(
 			payload,
 			process.env.ACCESS_TOKEN_SECRET,
-			{ expiresIn: process.env.ACCESS_TOKEN_LIFE }
+			{ expiresIn: process.env.REFRESH_TOKEN_LIFE }
 		);
 
 		// set refreshToken in user document
@@ -70,6 +70,7 @@ exports.loginUser = async (req, res) => {
 
 		// save user and set cookie
 		await user.save();
+		res.cookie('refresh', refreshToken, { httpOnly: true });
 		res.cookie('jwt', accessToken, { httpOnly: true });
 		// successfully login and response
 		res.status(200).json(user);

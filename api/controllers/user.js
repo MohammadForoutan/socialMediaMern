@@ -81,6 +81,18 @@ exports.getUser = async (req, res) => {
 	}
 };
 
+exports.searchUsers = async(req, res) => {
+	const {username } = req.query;
+	try {
+		const users = await User.find({username: {$regex: username, $options: 'i'}}, 'username email avatar')
+		res.status(200).json(users);
+	} catch (err) {
+		console.log(err);
+	}
+
+
+}
+
 exports.followUser = async (req, res) => {
 	try {
 		const isYourSelf = req.payload._id === req.params.id;
@@ -102,7 +114,7 @@ exports.followUser = async (req, res) => {
 		}
 
 		// update target user followers
-		await user.updateOne({ $push: { followers: req.paload._id } });
+		await user.updateOne({ $push: { followers: req.payload._id } });
 		// update current user followings
 		await currentUser.updateOne({
 			$push: { followings: req.params.id }
