@@ -24,7 +24,7 @@
 
 .topbar__logout-btn {
 	background: #ff5252 !important;
-    color: white !important;
+	color: white !important;
 }
 
 .topbar__searchbar {
@@ -151,6 +151,19 @@
 	padding-left: calc(1em + 32px);
 }
 
+.search__results {
+	z-index: 1000;
+	background: #fefefe;
+	color: #333;
+	border-radius: 4px;
+	box-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2),
+		0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+}
+
+.search__result-item {
+	cursor: pointer;
+}
+
 .menu__divider {
 	flex-grow: 1;
 }
@@ -163,11 +176,9 @@
 	display: none !important;
 }
 
-
 .primary-color {
-    color: white !important;
+	color: white !important;
 }
-
 
 @media (max-width: 660px) {
 	.menu__mobile {

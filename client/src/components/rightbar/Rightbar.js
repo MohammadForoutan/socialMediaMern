@@ -37,7 +37,7 @@ export default function Rightbar({ user }) {
 	const HomeRightbar = () => {
 		const PF = process.env.REACT_APP_PUBLIC_FOLDER;
 		const [followings, setFollowings] = useState([]);
-		const { user } = useContext(AuthContext);
+		const { user: currentUser } = useContext(AuthContext);
 		const [anchorEl, setAnchorEl] = useState(null);
 		const history = useHistory();
 
@@ -65,7 +65,7 @@ export default function Rightbar({ user }) {
 		const fetchFollowings = async () => {
 			try {
 				const response = await axios.get(
-					`/users/followings/${user._id}`
+					`/users/followings/${currentUser._id}`
 				);
 				setFollowings(response.data);
 			} catch (err) {
@@ -75,14 +75,14 @@ export default function Rightbar({ user }) {
 
 		useEffect(() => {
 			fetchFollowings();
-		}, [user]);
+		}, [currentUser]);
 
 		return (
 			<Card className="righbar__card">
 				<h4>Followings</h4>
 				{followings.map((following) => (
 					<>
-						<Link>
+						<Link to={`/profile/${following.username}`}>
 							<CardHeader
 								key={following._id}
 								avatar={
@@ -143,24 +143,23 @@ export default function Rightbar({ user }) {
 			fetchFollowings();
 			const isFollowed = user?.followers?.includes(currentUser?._id);
 			setFollowed(isFollowed);
-		}, [user]);
+		}, [user.username]);
 
 		const handleFollowUser = async () => {
 			try {
+				console.log({
+					followed,
+					user,
+					currentUser
+				})
 				if (followed) {
 					const response = await axios.put(
-						`/users/${user._id}/unfollow`,
-						{
-							userId: currentUser._id
-						}
+						`/users/${user._id}/unfollow`
 					);
 					setFollowed(false);
 				} else {
 					const response = await axios.put(
-						`/users/${user._id}/follow`,
-						{
-							userId: currentUser._id
-						}
+						`/users/${user._id}/follow`
 					);
 					console.log(response.data);
 					setFollowed(true);
@@ -172,7 +171,7 @@ export default function Rightbar({ user }) {
 
 		return (
 			<>
-				{user.username !== currentUser?.username && (
+				{user.username !== currentUser?.username && currentUser && (
 					<>
 						<Button
 							color={followed ? 'secondary' : 'primary'}

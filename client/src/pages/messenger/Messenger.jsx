@@ -44,6 +44,7 @@ export default function Messenger() {
 	};
 	const handleSendNewMessage = async (e) => {
 		e.preventDefault();
+		if(newMessage.trim().length < 1) return
 		const message = {
 			sender: currentUser._id,
 			text: newMessage,

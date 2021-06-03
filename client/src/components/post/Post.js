@@ -1,6 +1,7 @@
 import './post.css';
 import {
 	Delete,
+	Edit,
 	MoreVert,
 	ShareRounded,
 	ThumbUp,
@@ -36,10 +37,12 @@ export default function Post({ post }) {
 	}, [post, currentUser?._id]);
 
 	const likeHandler = async () => {
+		if(!currentUser) {
+			alert("لاگین کنید")
+			return;
+		}
 		try {
-			await axios.put(`/posts/${post._id}/like`, {
-				userId: currentUser._id
-			});
+			await axios.put(`/posts/${post._id}/like`);
 
 			setLike(isLiked ? like - 1 : like + 1);
 			setIsLiked(!isLiked);

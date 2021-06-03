@@ -358,7 +358,9 @@ export default function Profile() {
 
 						<div className="profile__input-container image">
 							<label htmlFor="cover">
-								<Image color="primary" />
+								<Avatar>
+								<Image />
+								</Avatar>
 								<span>Cover</span>
 								<span className="edit-icon">
 									<Edit />

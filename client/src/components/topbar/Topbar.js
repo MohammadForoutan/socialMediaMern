@@ -21,13 +21,41 @@ import {
 	MenuItem,
 	Menu,
 	Toolbar,
-	Typography
+	Typography,
+	List,
+	ListItem,
+	ListItemAvatar,
+	Avatar,
+	ListItemText
 } from '@material-ui/core';
+import axios from 'axios';
 
 function Topbar() {
 	const { user, dispatch } = useContext(AuthContext);
 	const history = useHistory();
 	const PF = process.env.REACT_APP_PUBLIC_FOLDER;
+	const [search, setSearch] = useState('');
+	const [searchResults, setSearchResults] = useState('');
+
+	const searchItems = async (e) => {
+		setSearch(e.target.value);
+		if (search.length >= 3) {
+			try {
+				const response = await axios.get(
+					`/users/search/?username=${search}`
+				);
+				setSearchResults(response.data);
+			} catch (err) {
+				console.log(err);
+			}
+		} else {
+			setSearchResults([])
+		}
+	};
+
+	const handleSearchResultClick = (e) => {
+		console.log(e);
+	};
 
 	const handleLogout = () => {
 		dispatch(Logout());
@@ -74,17 +102,10 @@ function Topbar() {
 			open={isMenuOpen}
 			onClose={handleMenuClose}
 		>
-			{user && (
-				<>
-					<MenuItem onClick={handleMenuProfile}>Profile</MenuItem>
-					<MenuItem
-						className="topbar__logout-btn"
-						onClick={handleLogout}
-					>
-						Log out
-					</MenuItem>
-				</>
-			)}
+			<MenuItem onClick={handleMenuProfile}>Profile</MenuItem>
+			<MenuItem className="topbar__logout-btn" onClick={handleLogout}>
+				Log out
+			</MenuItem>
 		</Menu>
 	);
 
@@ -99,14 +120,16 @@ function Topbar() {
 			open={isMobileMenuOpen}
 			onClose={handleMobileMenuClose}
 		>
-			<MenuItem>
-				<IconButton aria-label="show 4 new mails" color="inherit">
-					<Badge badgeContent={4} color="secondary">
-						<Mail />
-					</Badge>
-				</IconButton>
-				<p>Messages</p>
-			</MenuItem>
+			<Link to="/messenger" style={{ color: '#212121' }}>
+				<MenuItem>
+					<IconButton aria-label="show 4 new mails" color="inherit">
+						<Badge badgeContent={4} color="secondary">
+							<Mail />
+						</Badge>
+					</IconButton>
+					<p>Messages</p>
+				</MenuItem>
+			</Link>
 			<MenuItem>
 				<IconButton
 					aria-label="show 11 new notifications"
@@ -153,11 +176,40 @@ function Topbar() {
 						<div className="search__icon">
 							<Search />
 						</div>
+
 						<InputBase
 							className="search__input"
 							placeholder="Search…"
 							inputProps={{ 'aria-label': 'search' }}
+							value={search}
+							type="search"
+							onChange={(e) => searchItems(e)}
 						/>
+
+						{searchResults?.length > 0 && (
+							<List className="search__results">
+								{searchResults?.map((searchResult) => (
+									<Link key={searchResult._id} to={`/profile/${searchResult.username}`}>
+										<ListItem>
+											<ListItemAvatar>
+												<Avatar
+													src={
+														searchResult.avatar
+															? PF +
+															  searchResult.avatar
+															: PF +
+															  'person/defaultAvatar.jpeg'
+													}
+												/>
+											</ListItemAvatar>
+											<ListItemText
+												primary={searchResult.username}
+											/>
+										</ListItem>
+									</Link>
+								))}
+							</List>
+						)}
 					</div>
 					<div className="menu__divider" />
 					{user && (
@@ -165,7 +217,7 @@ function Topbar() {
 							<div className="menu__mobile">
 								<Link
 									to={`/messenger`}
-									className="primary-color "
+									className="primary-color"
 								>
 									<IconButton
 										aria-label="show 4 new mails"

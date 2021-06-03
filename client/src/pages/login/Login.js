@@ -30,9 +30,9 @@ export default function Login() {
 			localStorage.setItem('user', JSON.stringify(response.data));
 			history.push('/');
 		} catch (err) {
-			setLoginError(err.response.data);
 			console.log(err);
 			console.log(err.response.data);
+			setLoginError(err.response.data);
 
 			dispatch({ type: 'LOGIN_FAILURE', payload: err });
 		}
