@@ -24,11 +24,11 @@ export default function Register() {
 			);
 			return;
 		}
-		if (password.length > 5) {
+		if (password.length < 6) {
 			passwordRef.current.setCustomValidity("passwords don't match");
 			return;
 		}
-		if (confirmPassword.length > 5) {
+		if (confirmPassword.length < 6) {
 			confirmPasswordRef.current.setCustomValidity(
 				"passwords don't match"
 			);
