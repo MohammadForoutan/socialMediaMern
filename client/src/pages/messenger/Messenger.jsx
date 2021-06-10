@@ -1,11 +1,25 @@
 import Topbar from '../../components/topbar/Topbar';
 import './messenger.css';
 import Online from '../../components/online/Online';
-import { Avatar, IconButton, List, ListItem, ListItemAvatar, ListItemText } from '@material-ui/core';
-import { AlternateEmail, AttachFile, Home, LocationOn, Send, Wc } from '@material-ui/icons';
+import {
+	Avatar,
+	IconButton,
+	List,
+	ListItem,
+	ListItemAvatar,
+	ListItemText
+} from '@material-ui/core';
+import {
+	AlternateEmail,
+	AttachFile,
+	Home,
+	LocationOn,
+	Send,
+	Wc
+} from '@material-ui/icons';
 import Message from '../../components/message/Message';
 import { useContext, useEffect, useRef, useState } from 'react';
-import { AuthContext } from '../../context/AuthContext';
+import { AuthContext } from '../../contexts/AuthContext';
 import axios from 'axios';
 import { io } from 'socket.io-client';
 
@@ -22,29 +36,9 @@ export default function Messenger() {
 	const scrollRef = useRef();
 	const socket = useRef();
 
-	const fetchConversations = async () => {
-		try {
-			const response = await axios.get(
-				`/conversations/${currentUser._id}`
-			);
-			setConverSations(response.data);
-		} catch (err) {
-			console.log(err);
-		}
-	};
-	const fetchMessages = async () => {
-		try {
-			const reposne = await axios.get(
-				`/messages/${currentConversation._id}`
-			);
-			setMessages(reposne.data);
-		} catch (err) {
-			console.log(err);
-		}
-	};
 	const handleSendNewMessage = async (e) => {
 		e.preventDefault();
-		if(newMessage.trim().length < 1) return
+		if (newMessage.trim().length < 1) return;
 		const message = {
 			sender: currentUser._id,
 			text: newMessage,
@@ -101,6 +95,16 @@ export default function Messenger() {
 	}, [arrivalMessage, currentConversation]);
 
 	useEffect(() => {
+		const fetchConversations = async () => {
+			try {
+				const response = await axios.get(
+					`/conversations/${currentUser._id}`
+				);
+				setConverSations(response.data);
+			} catch (err) {
+				console.log(err);
+			}
+		};
 		fetchConversations();
 		socket.current.on('getMessage', (data) => {
 			setArrivalMessage({
@@ -112,15 +116,25 @@ export default function Messenger() {
 	}, [currentUser._id]);
 
 	useEffect(() => {
+		const fetchMessages = async () => {
+			try {
+				const reposne = await axios.get(
+					`/messages/${currentConversation._id}`
+				);
+				setMessages(reposne.data);
+			} catch (err) {
+				console.log(err);
+			}
+		};
 		if (currentConversation) {
 			fetchMessages();
 			const contact = currentConversation?.members.find(
-				(member) => member._id !== currentUser._id
+				(member) => member?._id !== currentUser._id
 			);
 			console.log(contact);
 			setCurrentContact(contact);
 		}
-	}, [currentConversation?._id]);
+	}, [currentConversation, currentUser]);
 
 	useEffect(() => {
 		scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -190,10 +204,12 @@ export default function Messenger() {
 						</div>
 					</>
 				) : (
-					<p className="messenger__box messenger__box--default">Choose a Conversation</p>
+					<p className="messenger__box messenger__box--default">
+						Choose a Conversation
+					</p>
 				)}
-					{currentContact ? (
-				<div className="messenger__contact">
+				{currentContact ? (
+					<div className="messenger__contact">
 						<div className="messenger__contact-container">
 							<img
 								className="messenger__contact-img"
@@ -205,41 +221,50 @@ export default function Messenger() {
 								alt=""
 							/>
 							<List className="messenger__contact-info">
-							<ListItem>
-							<ListItemAvatar>
-								<Avatar>
-									<AlternateEmail />
-								</Avatar>
-							</ListItemAvatar>
-							<ListItemText primary={currentContact.username} />
-						</ListItem>
-						<ListItem>
-							<ListItemAvatar>
-								<Avatar>
-									<LocationOn />
-								</Avatar>
-							</ListItemAvatar>
-							<ListItemText primary={currentContact.city} />
-						</ListItem>
-						<ListItem>
-							<ListItemAvatar>
-								<Avatar>
-									<Home />
-								</Avatar>
-							</ListItemAvatar>
-							<ListItemText primary={currentContact.from} />
-						</ListItem>
-						<ListItem>
-							<ListItemAvatar>
-								<Avatar>
-									<Wc />
-								</Avatar>
-							</ListItemAvatar>
-							<ListItemText primary={currentContact.relationship} />
-						</ListItem>
-					</List>
+								<ListItem>
+									<ListItemAvatar>
+										<Avatar>
+											<AlternateEmail />
+										</Avatar>
+									</ListItemAvatar>
+									<ListItemText
+										primary={currentContact.username}
+									/>
+								</ListItem>
+								<ListItem>
+									<ListItemAvatar>
+										<Avatar>
+											<LocationOn />
+										</Avatar>
+									</ListItemAvatar>
+									<ListItemText
+										primary={currentContact.city}
+									/>
+								</ListItem>
+								<ListItem>
+									<ListItemAvatar>
+										<Avatar>
+											<Home />
+										</Avatar>
+									</ListItemAvatar>
+									<ListItemText
+										primary={currentContact.from}
+									/>
+								</ListItem>
+								<ListItem>
+									<ListItemAvatar>
+										<Avatar>
+											<Wc />
+										</Avatar>
+									</ListItemAvatar>
+									<ListItemText
+										primary={currentContact.relationship}
+									/>
+								</ListItem>
+							</List>
 						</div>
-				</div>) : null}
+					</div>
+				) : null}
 			</div>
 		</>
 	);

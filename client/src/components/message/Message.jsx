@@ -20,6 +20,7 @@ export default function Message({ conversation, message, currentUser }) {
 					src={
 						avatar ? PF+avatar : PF+'person/defaultAvatar.jpeg'
 					}
+					alt={contact[0].username}
 					className="message__avatar"
 				/>
 				<span className="message__username">

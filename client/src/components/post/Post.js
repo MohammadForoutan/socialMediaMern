@@ -11,7 +11,7 @@ import { format } from 'timeago.js';
 import { useContext, useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
-import { AuthContext } from '../../context/AuthContext';
+import { AuthContext } from '../../contexts/AuthContext';
 import {
 	Avatar,
 	Card,
@@ -59,6 +59,10 @@ export default function Post({ post }) {
 		setAnchorEl(e.currentTarget);
 	};
 
+	const handleEditDialog = () => {
+
+	}
+
 	const handleDeletePost = async () => {
 		try {
 			await axios.delete(`/posts/${post._id}`, {
@@ -103,12 +107,19 @@ export default function Post({ post }) {
 						open={Boolean(anchorEl)}
 						onClose={handleClosePostOptions}
 					>
+						{/* delete post */}
 						{user?._id === currentUser?._id && (
 							<MenuItem onClick={handleDeletePost}>
 								delete <Delete color="secondary" />
 							</MenuItem>
 						)}
-						<MenuItem onClick={handleClosePostOptions}>
+						{/* edit post */}
+						{user?._id === currentUser?._id && (
+							<MenuItem onClick={handleEditDialog}>
+								Edit <Edit color="inherit"/>
+							</MenuItem>
+						)}
+						<MenuItem onClick={() => {}}>
 							share <ShareRounded />
 						</MenuItem>
 					</Menu>

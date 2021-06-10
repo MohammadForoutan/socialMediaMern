@@ -24,6 +24,16 @@ export default function Register() {
 			);
 			return;
 		}
+		if (password.length > 5) {
+			passwordRef.current.setCustomValidity("passwords don't match");
+			return;
+		}
+		if (confirmPassword.length > 5) {
+			confirmPasswordRef.current.setCustomValidity(
+				"passwords don't match"
+			);
+			return;
+		}
 
 		try {
 			await axios.post('auth/register', {
@@ -31,7 +41,6 @@ export default function Register() {
 				email,
 				password
 			});
-
 			history.push('/login');
 		} catch (err) {
 			console.log(err);

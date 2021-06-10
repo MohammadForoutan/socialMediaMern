@@ -4,7 +4,7 @@ import {
 	Cancel
 } from '@material-ui/icons';
 import { useContext, useRef, useState } from 'react';
-import { AuthContext } from '../../context/AuthContext';
+import { AuthContext } from '../../contexts/AuthContext';
 import axios from 'axios';
 import { useHistory } from 'react-router';
 import { Avatar, Button, Card, Divider, Grid } from '@material-ui/core';

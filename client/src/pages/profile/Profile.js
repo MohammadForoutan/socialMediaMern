@@ -2,31 +2,22 @@ import './profile.css';
 import Topbar from '../../components/topbar/Topbar';
 import Feed from '../../components/feed/Feed';
 import Rightbar from '../../components/rightbar/Rightbar';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 import axios from 'axios';
-import { Cancel, Edit, Image, Label } from '@material-ui/icons';
+import { Cancel, Edit, Image } from '@material-ui/icons';
 import {
 	AppBar,
 	Avatar,
 	Button,
 	Container,
 	Dialog,
-	Divider,
-	FormControl,
-	FormHelperText,
-	IconButton,
-	Input,
-	InputLabel,
-	Slide,
 	TextField,
-	Toolbar,
-	Typography
+	Toolbar
 } from '@material-ui/core';
 
 import { Alert } from '@material-ui/lab';
-import { AuthContext } from '../../context/AuthContext';
-import { UpdateUser } from '../../context/AuthActions';
+import { AuthContext } from '../../contexts/AuthContext';
 
 export default function Profile() {
 	const { user: currentUser, dispatch } = useContext(AuthContext);
@@ -49,19 +40,20 @@ export default function Profile() {
 	const username = params.username;
 	// const [username, setUsername] = useState(params.username);
 
-	const fetchUser = async () => {
-		const response = await axios.get(`/users/?username=${username}`);
-		setUser(response.data);
 
-		const user = response.data;
-		setFormUsername(user.username);
-		setEmail(user.email);
-		setCity(user.city);
-		setFrom(user.from);
-		setRelationship(user.relationship);
-	};
 
 	useEffect(() => {
+		const fetchUser = async () => {
+			const response = await axios.get(`/users/?username=${username}`);
+			setUser(response.data);
+	
+			const user = response.data;
+			setFormUsername(user.username);
+			setEmail(user.email);
+			setCity(user.city);
+			setFrom(user.from);
+			setRelationship(user.relationship);
+		};
 		fetchUser();
 	}, [username]);
 	const PF = process.env.REACT_APP_PUBLIC_FOLDER;
@@ -101,7 +93,7 @@ export default function Profile() {
 			data.append('file', cover);
 			updateProfile.cover = coverName;
 			try {
-				const response = await axios.post('/upload', data);
+				 await axios.post('/upload', data);
 			} catch (err) {
 				console.log(err);
 			}
@@ -121,13 +113,12 @@ export default function Profile() {
 			data.append('file', avatar);
 			updateProfile.avatar = avatarName;
 			try {
-				const response = await axios.post('/upload', data);
+				await axios.post('/upload', data);
 			} catch (err) {
 				console.log(err);
 			}
 		}
-
-		const reponse = await axios.put(`/users/${user._id}`, updateProfile);
+		await axios.put(`/users/${user._id}`, updateProfile);
 		dispatch({
 			type: 'UPDATEUSER',
 			payload: {
@@ -142,7 +133,6 @@ export default function Profile() {
 			}
 		});
 
-		console.log(currentUser);
 		handleCloseEditProfile();
 
 		history.push('/');
@@ -344,6 +334,7 @@ export default function Profile() {
 								<div className="share__image ">
 									<img
 										src={URL.createObjectURL(avatar)}
+										alt="share"
 										className="image-preview"
 									/>
 									<Cancel
@@ -359,7 +350,7 @@ export default function Profile() {
 						<div className="profile__input-container image">
 							<label htmlFor="cover">
 								<Avatar>
-								<Image />
+									<Image />
 								</Avatar>
 								<span>Cover</span>
 								<span className="edit-icon">
@@ -376,6 +367,7 @@ export default function Profile() {
 								<div className="share__image ">
 									<img
 										src={URL.createObjectURL(cover)}
+										alt="share post"
 										className="image-preview"
 									/>
 									<Cancel

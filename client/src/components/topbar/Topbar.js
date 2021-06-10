@@ -2,8 +2,6 @@ import './topbar.css';
 import {
 	Search,
 	Notifications,
-	Chat,
-	Person,
 	Menu as MenuIcon,
 	Mail,
 	AccountCircle,
@@ -12,8 +10,8 @@ import {
 } from '@material-ui/icons';
 import { Link, useHistory } from 'react-router-dom';
 import { useContext, useState } from 'react';
-import { AuthContext } from '../../context/AuthContext';
-import { Logout } from '../../context/AuthActions';
+import { AuthContext } from '../../contexts/AuthContext';
+import { Logout } from '../../contexts/AuthActions';
 import {
 	AppBar,
 	Badge,
@@ -53,10 +51,6 @@ function Topbar() {
 		} else {
 			setSearchResults([])
 		}
-	};
-
-	const handleSearchResultClick = (e) => {
-		console.log(e);
 	};
 
 	const handleLogout = () => {

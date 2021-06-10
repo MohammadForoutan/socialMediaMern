@@ -37,7 +37,7 @@ const AuthReducer = (state, action) => {
 					followings: [...state.user.followings, action.payload]
 				}
 			};
-		case 'FOLLOW':
+		case 'UNFOLLOW':
 			return {
 				...state,
 				user: {

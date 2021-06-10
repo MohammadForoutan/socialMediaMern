@@ -2,18 +2,14 @@ import './rightbar.css';
 import { useContext, useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
-import { AuthContext } from '../../context/AuthContext';
+import { AuthContext } from '../../contexts/AuthContext';
 import {
 	Add,
-	BeachAccess,
 	Home,
-	Image,
 	LocationOn,
 	MoreVertRounded,
 	Remove,
-	ShareRounded,
-	Wc,
-	Work
+	Wc
 } from '@material-ui/icons';
 import {
 	Avatar,
@@ -62,18 +58,18 @@ export default function Rightbar({ user }) {
 				console.log(err);
 			}
 		};
-		const fetchFollowings = async () => {
-			try {
-				const response = await axios.get(
-					`/users/followings/${currentUser._id}`
-				);
-				setFollowings(response.data);
-			} catch (err) {
-				console.log(err);
-			}
-		};
 
 		useEffect(() => {
+			const fetchFollowings = async () => {
+				try {
+					const response = await axios.get(
+						`/users/followings/${currentUser._id}`
+					);
+					setFollowings(response.data);
+				} catch (err) {
+					console.log(err);
+				}
+			};
 			fetchFollowings();
 		}, [currentUser]);
 
@@ -133,17 +129,19 @@ export default function Rightbar({ user }) {
 		const [followings, setFollowings] = useState([]);
 		const [followed, setFollowed] = useState(false);
 
-		const fetchFollowings = async () => {
-			if (!user?._id) return;
-			const response = await axios.get(`/users/followings/${user._id}`);
-			setFollowings(response.data);
-		};
-
 		useEffect(() => {
+			const fetchFollowings = async () => {
+				if (!user?._id) return;
+				const response = await axios.get(
+					`/users/followings/${user._id}`
+				);
+				setFollowings(response.data);
+			};
+
 			fetchFollowings();
 			const isFollowed = user?.followers?.includes(currentUser?._id);
 			setFollowed(isFollowed);
-		}, [user.username]);
+		}, []);
 
 		const handleFollowUser = async () => {
 			try {
@@ -151,11 +149,9 @@ export default function Rightbar({ user }) {
 					followed,
 					user,
 					currentUser
-				})
+				});
 				if (followed) {
-					const response = await axios.put(
-						`/users/${user._id}/unfollow`
-					);
+					await axios.put(`/users/${user._id}/unfollow`);
 					setFollowed(false);
 				} else {
 					const response = await axios.put(

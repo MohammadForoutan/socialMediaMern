@@ -1,6 +1,6 @@
 import './login.css';
 import { useContext, useRef, useState } from 'react';
-import { AuthContext } from '../../context/AuthContext';
+import { AuthContext } from '../../contexts/AuthContext';
 import {
 	Button,
 	CircularProgress,
@@ -25,15 +25,11 @@ export default function Login() {
 		dispatch({ type: 'LOGIN_START' });
 		try {
 			const response = await axios.post('/auth/login', userData);
-			console.log(response);
 			dispatch({ type: 'LOGIN_SUCCESS', payload: response.data });
 			localStorage.setItem('user', JSON.stringify(response.data));
 			history.push('/');
 		} catch (err) {
-			console.log(err);
-			console.log(err.response.data);
 			setLoginError(err.response.data);
-
 			dispatch({ type: 'LOGIN_FAILURE', payload: err });
 		}
 	};
@@ -118,7 +114,7 @@ export default function Login() {
 							<br />
 							<Link to="/register">
 								<Button variant="outlined" color="secondary">
-										Register
+									Register
 								</Button>
 							</Link>
 							&nbsp;&nbsp;&nbsp;&nbsp;
@@ -129,15 +125,15 @@ export default function Login() {
 					</Grid>
 				</Grid>
 
-				{/* Alert */}
-
 				<Snackbar
-				autoHideDuration={3000}
+					autoHideDuration={4000}
 					open={loginError}
 					onClose={handleCloseLoginSnackbar}
 					anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
 				>
-					<Alert variant="filled" severity="error">{loginError}</Alert>
+					<Alert severity="error" variant="filled">
+						{loginError}
+					</Alert>
 				</Snackbar>
 			</Container>
 		</div>

@@ -3,11 +3,13 @@ const User = require('../models/User');
 
 exports.verify = async (req, res, next) => {
 	let accessToken = req.cookies.jwt;
-	if (!accessToken) {
-		return res.status(403).json('no accessToken cookie found');
-	}
 
+
+	
 	try {
+		if(!accessToken) {
+			
+		}
 		// verify accessToken and set in request
 		const payload = await jwt.verify(
 			accessToken,
@@ -74,7 +76,8 @@ exports.verify = async (req, res, next) => {
 			next();
 		} catch (err) {
 			console.log(err);
-			res.status(300).redirect('/login');
+			// res.status(300).redirect('http://localhost:3000/login');
+			res.redirect('/')
 		}
 	}
 };
