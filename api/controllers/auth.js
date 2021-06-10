@@ -2,10 +2,11 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
-exports.registerUser = async (req, res) => {
+exports.register = async (req, res) => {
 	try {
 		// get data from body
 		const { username, email, password } = req.body;
+
 
 		// generate hash password
 		const salt = await bcrypt.genSalt(12);
@@ -18,16 +19,18 @@ exports.registerUser = async (req, res) => {
 			password: hashedPassword
 		});
 
+		const token = await user.generateAuthToken();
+
 		// save user and response
 		await user.save();
-		res.status(200).json({ user });
+		res.status(200).json({ user, token });
 	} catch (err) {
 		console.log(err);
 		res.status(500).json(err);
 	}
 };
 
-exports.loginUser = async (req, res) => {
+exports.login = async (req, res) => {
 	try {
 		// get data
 		const { email, password } = req.body;
@@ -40,82 +43,52 @@ exports.loginUser = async (req, res) => {
 		}
 
 		// validate password
-		const isValidPassword = await bcrypt.compare(password, user.password);
-		if (!isValidPassword) {
+		const isMatch = await bcrypt.compare(password, user.password);
+		if (!isMatch) {
 			return res.status(400).json('wrong password');
 		}
 
-		// JWT payload
-		const payload = {
-			_id: user._id,
-			username: user.username,
-			email: user.email
-		};
-		// json-web-token 
-		// jwt accessToken
-		const accessToken = await jwt.sign(
-			payload,
-			process.env.ACCESS_TOKEN_SECRET,
-			{ expiresIn: process.env.ACCESS_TOKEN_LIFE }
-		);
-		// jwt refreshToken 
-		const refreshToken = await jwt.sign(
-			payload,
-			process.env.ACCESS_TOKEN_SECRET,
-			{ expiresIn: process.env.REFRESH_TOKEN_LIFE }
-		);
+		// generate token
+		const token = await user.generateAuthToken();
 
-		// set refreshToken in user document
-		user.refreshToken = refreshToken;
-
-		// save user and set cookie
-		await user.save();
-		res.cookie('refresh', refreshToken, { httpOnly: true });
-		res.cookie('jwt', accessToken, { httpOnly: true });
 		// successfully login and response
-		res.status(200).json(user);
+		res.status(200).json({ user, token });
 	} catch (err) {
 		console.log(err);
 		res.status(500).json(err);
 	}
 };
 
-exports.refreshToken = async (req, res) => {
-	// Take accessToken from cookie
-	const acecessToken = req.cookie.jwt;
-
-	if (!acecessToken) {
-		return res.status(403).send();
-	}
-
-	let payload;
+exports.logout = async (req, res) => {
 	try {
-		// verify accessToken
-		payload = await jwt.verify(
-			accessToken,
-			process.env.ACCESS_TOKEN_SECRET
-		);
+		const user = req.user;
+		const token = req.token;
+
+		if (!user && !token) {
+			return res.status(403).json({ message: 'ok' });
+		}
+
+		await user.logout(token);
+
+		res.json({ message: 'user logout successfully' });
 	} catch (err) {
-		return res.status(401).send();
+		console.log(err);
 	}
+};
 
-	// find user
-	const user = await User.findById(payload._id);
-
+exports.logoutAll = async (req, res) => {
 	try {
-		// verify refreshToken
-		await jwt.verify(user.refreshToken, process.env.ACCESS_TOKEN_SECRET);
-	} catch (err) {
-		return res.status(401).send();
-	}
-	// sign a new accessToken
-	const newAccessToken = await jwt.sign(
-		payload,
-		process.env.ACCESS_TOKEN_SECRET,
-		{ expiresIn: process.env.ACCESS_TOKEN_LIFE }
-	);
+		const user = req.user;
+		const token = req.token;
 
-	// set accessToken in cookie
-	res.cookie('jwt', newAccessToken, { secure: true, httpOnly: true });
-	res.send();
+		if (!user && !token) {
+			return res.status(403).json({ message: 'ok' });
+		}
+
+		await user.logoutAll();
+
+		res.json({ message: 'all sessions logout successfully' });
+	} catch (err) {
+		console.log(err);
+	}
 };

@@ -12,10 +12,10 @@ router.put('/:id', verify, postController.updatePost);
 router.delete('/:id', verify, postController.deletePost);
 // like/dislike  a post
 router.put('/:id/like', verify, postController.likePost);
-// get a post
-router.get('/post/:id', postController.getPost);
 // get timeLine post
 router.get('/timeline',verify,  postController.getTimelinePosts);
+// get a post
+router.get('/post/:id', postController.getPost);
 // get user's posts
 router.get('/profile/:username', postController.getUserPosts);
 
