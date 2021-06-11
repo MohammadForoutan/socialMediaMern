@@ -9,8 +9,4 @@ router.post('/', verify, conversationController.createConversation);
 // get conversations of a user
 router.get('/:userId', verify, conversationController.getConversations);
 
-// new conversation
-// new conversation
-// new conversation
-
 module.exports = router;

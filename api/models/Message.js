@@ -5,10 +5,12 @@ const MessageSchema = new Schema(
 	{
     conversationId: {
       type: Schema.Types.ObjectId,
+      required: true,
       ref: "Conversation"
     },
     sender: {
       type: Schema.Types.ObjectId,
+      required: true,
       ref: "User"
     },
     text: {

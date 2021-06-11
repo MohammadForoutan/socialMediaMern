@@ -1,7 +1,6 @@
 const Conversation = require('../models/Conversation');
 
 exports.createConversation = async (req, res) => {
-	// Take Data
 	const { senderId, receiverId } = req.body;
 	// create new conversation
 	const newConversation = new Conversation({
@@ -9,9 +8,7 @@ exports.createConversation = async (req, res) => {
 	});
 
 	try {
-		// save conversation
 		const savedConversation = await newConversation.save();
-		// return conversation
 		res.status(200).json(savedConversation);
 	} catch (err) {
 		console.log(err);
@@ -20,10 +17,11 @@ exports.createConversation = async (req, res) => {
 };
 
 exports.getConversations = async (req, res) => {
+	const userId = req.payload._id;
 	try {
 		// find conversation and members(populate)
 		const conversations = await Conversation.find({
-			members: { $in: [req.payload._id] }
+			members: { $in: [userId] }
 		}).populate({model: 'User', path: 'members'});
 		// send conversations
 		res.status(200).json(conversations);
