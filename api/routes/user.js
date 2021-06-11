@@ -1,11 +1,15 @@
 const express = require('express');
 const router = express.Router();
-
+const {body} = require('express-validator')
 const userController = require('../controllers/user')
 const {verify} = require('../middlewares/auth')
 
 // Update user
-router.put('/:id', verify ,userController.updateUser)
+router.put('/:id', verify , [
+  body('email').isEmail().normalizeEmail(),
+  body('password').isLength({min: 6}),
+  body('username').isLength({min: 2})
+],userController.updateUser)
 // Delete user
 router.delete('/:id', verify,userController.deleteUser)
 // Get a user

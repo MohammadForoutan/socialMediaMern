@@ -7,7 +7,8 @@ const {body} = require('express-validator')
 // Register
 router.post('/register',[
   body('email').isEmail().normalizeEmail(),
-  body('password').length({min: 6}),
+  body('password').isLength({min: 6}),
+  body('username').isLength({min: 2}),
   body('passwordConfirm').custom((value, {req}) => {
     if(value !== req.body.password) {
       return Promise.reject('password and its confirmation are not same');
@@ -18,7 +19,7 @@ router.post('/register',[
 router.post('/login',
 [
   body('email').isEmail().normalizeEmail(),
-  body('password').length({min: 6})
+  body('password').isLength({min: 6})
 ]
 ,authController.login)
 // logout

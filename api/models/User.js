@@ -7,7 +7,7 @@ const UserSchema = new Schema(
 		username: {
 			type: String,
 			required: true,
-			min: 3,
+			min: 2,
 			max: 20,
 			unique: true
 		},
