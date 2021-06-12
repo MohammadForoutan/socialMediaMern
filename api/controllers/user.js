@@ -9,7 +9,9 @@ exports.updateUser = async (req, res) => {
 		const user = await User.findById(req.params.id);
 
 		// is user owner of account
-		const isOwner = req.payload._id === req.params.id || user.isAdmin;
+		const isOwner =
+			req.user._id.toString() === req.params.id.toString() ||
+			user.isAdmin;
 		// if password updated
 		const isPasswordUpdated =
 			req.body.password && req.body.password.trim().length >= 6;
@@ -40,7 +42,7 @@ exports.deleteUser = async (req, res) => {
 		// find user
 		const user = await User.findById(req.params._id);
 		// is user owner of account
-		const isOwner = req.payload._id === req.params.id || user.isAdmin;
+		const isOwner = req.user._id === req.params.id || user.isAdmin;
 		// delete User
 		if (isOwner) {
 			await user.deleteOne();
@@ -81,21 +83,22 @@ exports.getUser = async (req, res) => {
 	}
 };
 
-exports.searchUsers = async(req, res) => {
-	const {username } = req.query;
+exports.searchUsers = async (req, res) => {
+	const { username } = req.query;
 	try {
-		const users = await User.find({username: {$regex: username, $options: 'i'}}, 'username email avatar')
+		const users = await User.find(
+			{ username: { $regex: username, $options: 'i' } },
+			'username email avatar'
+		);
 		res.status(200).json(users);
 	} catch (err) {
 		console.log(err);
 	}
-
-
-}
+};
 
 exports.followUser = async (req, res) => {
 	try {
-		const isYourSelf = req.payload._id === req.params.id;
+		const isYourSelf = req.user._id === req.params.id;
 
 		// user can follow user (can't user her/himself)
 		if (isYourSelf) {
@@ -103,10 +106,10 @@ exports.followUser = async (req, res) => {
 		}
 
 		const user = await User.findById(req.params.id);
-		const currentUser = await User.findById(req.payload._id);
+		const currentUser = await User.findById(req.user._id);
 
 		// if target user followers include current user
-		const hasUserFollowed = user.followers.includes(req.payload._id);
+		const hasUserFollowed = user.followers.includes(req.user._id);
 		// can't follow yourself
 		if (hasUserFollowed) {
 			// send 403 response
@@ -114,7 +117,7 @@ exports.followUser = async (req, res) => {
 		}
 
 		// update target user followers
-		await user.updateOne({ $push: { followers: req.payload._id } });
+		await user.updateOne({ $push: { followers: req.user._id } });
 		// update current user followings
 		await currentUser.updateOne({
 			$push: { followings: req.params.id }
@@ -130,14 +133,13 @@ exports.followUser = async (req, res) => {
 
 exports.unFollowUser = async (req, res) => {
 	try {
-		
-		if (req.payload._id.toString() !== req.params.id) {
+		if (req.user._id.toString() !== req.params.id) {
 			const user = await User.findById(req.params.id);
-			const currentUser = await User.findById(req.payload._id);
+			const currentUser = await User.findById(req.user._id);
 
-			const hasUserFollowed = user.followers.includes(req.payload._id);
+			const hasUserFollowed = user.followers.includes(req.user._id);
 			if (hasUserFollowed) {
-				await user.updateOne({ $pull: { followers: req.payload._id } });
+				await user.updateOne({ $pull: { followers: req.user._id } });
 				await currentUser.updateOne({
 					$pull: { followings: req.params.id }
 				});

@@ -4,7 +4,6 @@ import Feed from '../../components/feed/Feed';
 import Rightbar from '../../components/rightbar/Rightbar';
 import { useContext, useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
-import axios from 'axios';
 import { Cancel, Edit, Image } from '@material-ui/icons';
 import {
 	AppBar,
@@ -18,6 +17,8 @@ import {
 
 import { Alert } from '@material-ui/lab';
 import { AuthContext } from '../../contexts/AuthContext';
+import { getUserByUsername, updateUser } from '../../servicesConfigure/user';
+import {uploadImage} from '../../servicesConfigure/upload'
 
 export default function Profile() {
 	const { user: currentUser, dispatch } = useContext(AuthContext);
@@ -44,10 +45,10 @@ export default function Profile() {
 
 	useEffect(() => {
 		const fetchUser = async () => {
-			const response = await axios.get(`/users/?username=${username}`);
-			setUser(response.data);
+			const {data} = await getUserByUsername(username)
+			setUser(data);
 	
-			const user = response.data;
+			const user = data;
 			setFormUsername(user.username);
 			setEmail(user.email);
 			setCity(user.city);
@@ -93,7 +94,7 @@ export default function Profile() {
 			data.append('file', cover);
 			updateProfile.cover = coverName;
 			try {
-				 await axios.post('/upload', data);
+				await uploadImage(data);
 			} catch (err) {
 				console.log(err);
 			}
@@ -113,12 +114,12 @@ export default function Profile() {
 			data.append('file', avatar);
 			updateProfile.avatar = avatarName;
 			try {
-				await axios.post('/upload', data);
+				await uploadImage(data);
 			} catch (err) {
 				console.log(err);
 			}
 		}
-		await axios.put(`/users/${user._id}`, updateProfile);
+		await updateUser(currentUser._id, updateProfile)
 		dispatch({
 			type: 'UPDATEUSER',
 			payload: {
@@ -328,6 +329,7 @@ export default function Profile() {
 								id="avatar"
 								type="file"
 								accept=".png,.jpeg,.jpg"
+								name="file"
 								onChange={(e) => setAvatar(e.target.files[0])}
 							/>
 							{avatar && (
@@ -360,6 +362,7 @@ export default function Profile() {
 							<input
 								id="cover"
 								type="file"
+								name="file"
 								accept=".png,.jpeg,.jpg"
 								onChange={(e) => setCover(e.target.files[0])}
 							/>

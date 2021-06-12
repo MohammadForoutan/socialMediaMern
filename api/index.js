@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser')
 const helmet = require('helmet');
 const morgan = require('morgan');
 const multer = require('multer');
+const cors = require('cors')
 
 const authRoute = require('./routes/auth');
 const userRoute = require('./routes/user');
@@ -39,6 +40,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // middleware
+app.use(cors({origin: '*'}))
 app.use(express.json());
 app.use(helmet());
 app.use(morgan('common'));

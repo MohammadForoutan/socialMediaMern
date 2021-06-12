@@ -3,8 +3,9 @@ const User = require('../models/User');
 
 exports.verify = async (req, res, next) => {
 	const token = req.header('Authorization').replace("Bearer ", "");
+	console.log(req.header('Authorization'))
 	if(!token) {
-		res.status(403).json({error: 'token is not exist'})
+		return res.status(403).json({error: 'token is not exist'})
 	}
 
 	try {

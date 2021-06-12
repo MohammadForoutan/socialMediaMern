@@ -28,7 +28,7 @@ import {
 	ListItemText,
 	Button
 } from '@material-ui/core';
-import axios from 'axios';
+import { getSearchUser } from '../../servicesConfigure/user';
 
 function Topbar() {
 	const { user, dispatch } = useContext(AuthContext);
@@ -41,19 +41,18 @@ function Topbar() {
 		setSearch(e.target.value);
 		if (search.length >= 3) {
 			try {
-				const response = await axios.get(
-					`/users/search/?username=${search}`
-				);
-				setSearchResults(response.data);
+				const { data } = await getSearchUser(search);
+				setSearchResults(data);
 			} catch (err) {
 				console.log(err);
 			}
 		} else {
-			setSearchResults([])
+			setSearchResults([]);
 		}
 	};
 
 	const handleLogout = () => {
+		localStorage.setItem('token', null);
 		dispatch(Logout());
 		history.push('/login');
 	};
@@ -184,9 +183,20 @@ function Topbar() {
 
 						{searchResults?.length > 0 && (
 							<List className="search__results">
-								<Button className="search__results--remove" onClick={() => setSearchResults([])}><Close/></Button>
+								<Button
+									className="search__results--remove"
+									onClick={() => {
+										setSearchResults([]);
+										setSearch('');
+									}}
+								>
+									<Close />
+								</Button>
 								{searchResults?.map((searchResult) => (
-									<Link key={searchResult._id} to={`/profile/${searchResult.username}`}>
+									<Link
+										key={searchResult._id}
+										to={`/profile/${searchResult.username}`}
+									>
 										<ListItem>
 											<ListItemAvatar>
 												<Avatar

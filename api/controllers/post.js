@@ -5,8 +5,8 @@ exports.createPost = async (req, res) => {
 	// create new Post
 	const newPost = new Post({
 		userId: req.user._id,
-		description,
-		image
+		description: req.body.description,
+		image: req.body.image
 	});
 
 	try {
@@ -62,7 +62,8 @@ exports.likePost = async (req, res) => {
 	try {
 		const postId = req.params.id;
 		const post = await Post.findById(postId);
-		await post.toggleLikePost(req.user._id);
+		const result = await post.toggleLikePost(req.user._id);
+		res.status(200).json(result);
 	} catch (err) {
 		console.log(err);
 		res.status(500).json(err);

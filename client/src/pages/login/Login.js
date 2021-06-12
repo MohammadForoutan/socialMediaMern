@@ -1,6 +1,7 @@
 import './login.css';
 import { useContext, useRef, useState } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
+import {userLogin as login} from '../../servicesConfigure/auth'
 import {
 	Button,
 	CircularProgress,
@@ -12,7 +13,6 @@ import {
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import { Link, useHistory } from 'react-router-dom';
-import axios from 'axios';
 
 export default function Login() {
 	const { isFetching, dispatch, error } = useContext(AuthContext);
@@ -24,12 +24,15 @@ export default function Login() {
 	const loginUser = async (userData, dispatch) => {
 		dispatch({ type: 'LOGIN_START' });
 		try {
-			const response = await axios.post('/auth/login', userData);
-			dispatch({ type: 'LOGIN_SUCCESS', payload: response.data });
-			localStorage.setItem('user', JSON.stringify(response.data));
+			const {data} =  await login(userData)
+			console.log(data)
+			dispatch({ type: 'LOGIN_SUCCESS', payload: data.user });
+			localStorage.setItem('user', JSON.stringify(data.user));
+			localStorage.setItem('token', JSON.stringify(data.token));
 			history.push('/');
 		} catch (err) {
-			setLoginError(err.response.data);
+			// setLoginError(err.response.data);
+			console.log(err)
 			dispatch({ type: 'LOGIN_FAILURE', payload: err });
 		}
 	};

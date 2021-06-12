@@ -1,7 +1,6 @@
 import './rightbar.css';
 import { useContext, useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import axios from 'axios';
 import { AuthContext } from '../../contexts/AuthContext';
 import {
 	Add,
@@ -25,6 +24,11 @@ import {
 	Menu,
 	MenuItem
 } from '@material-ui/core';
+import {
+	unfollowUser,
+	followUser,
+	getFollowings
+} from '../../servicesConfigure/user';
 
 export default function Rightbar({ user }) {
 	const PF = process.env.REACT_APP_PUBLIC_FOLDER;
@@ -48,11 +52,9 @@ export default function Rightbar({ user }) {
 		const handleUnfollowUser = async (e) => {
 			try {
 				const followingId = e.currentTarget.getAttribute('userId');
-				await axios.put(`/users/${followingId}/unfollow`);
-
+				await unfollowUser(followingId);
 				// go login page and then redirect to home
 				history.push('/login');
-
 				handleCloseFollowingOptions();
 			} catch (err) {
 				console.log(err);
@@ -62,9 +64,7 @@ export default function Rightbar({ user }) {
 		useEffect(() => {
 			const fetchFollowings = async () => {
 				try {
-					const response = await axios.get(
-						`/users/followings/${currentUser._id}`
-					);
+					const response = await getFollowings(currentUser);
 					setFollowings(response.data);
 				} catch (err) {
 					console.log(err);
@@ -78,10 +78,10 @@ export default function Rightbar({ user }) {
 				<h4>Followings</h4>
 				{followings.map((following) => (
 					<>
-						<Link to={`/profile/${following.username}`}>
-							<CardHeader
-								key={following._id}
-								avatar={
+						<CardHeader
+							key={following._id}
+							avatar={
+								<Link to={`/profile/${following.username}`}>
 									<Avatar
 										src={
 											following.avatar
@@ -90,19 +90,23 @@ export default function Rightbar({ user }) {
 										}
 										alt={following.username}
 									/>
-								}
-								action={
-									<IconButton
-										aria-controls="following-menu"
-										onClick={handleFollowingOptions}
-									>
-										<MoreVertRounded />
-									</IconButton>
-								}
-								title={following.username}
-								//  subheader="September 14, 2016"
-							/>
-						</Link>
+								</Link>
+							}
+							action={
+								<IconButton
+									aria-controls="following-menu"
+									onClick={handleFollowingOptions}
+								>
+									<MoreVertRounded />
+								</IconButton>
+							}
+							title={
+								<Link to={`/profile/${following.username}`}>
+									{following.username}
+								</Link>
+							}
+							//  subheader="September 14, 2016"
+						/>
 
 						<Menu
 							id="following-menu"
@@ -132,9 +136,7 @@ export default function Rightbar({ user }) {
 		useEffect(() => {
 			const fetchFollowings = async () => {
 				if (!user?._id) return;
-				const response = await axios.get(
-					`/users/followings/${user._id}`
-				);
+				const response = await getFollowings(user);
 				setFollowings(response.data);
 			};
 
@@ -151,13 +153,10 @@ export default function Rightbar({ user }) {
 					currentUser
 				});
 				if (followed) {
-					await axios.put(`/users/${user._id}/unfollow`);
+					await unfollowUser(user._id);
 					setFollowed(false);
 				} else {
-					const response = await axios.put(
-						`/users/${user._id}/follow`
-					);
-					console.log(response.data);
+					await followUser(user._id);
 					setFollowed(true);
 				}
 			} catch (err) {

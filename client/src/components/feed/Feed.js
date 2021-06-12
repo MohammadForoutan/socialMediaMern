@@ -2,9 +2,9 @@ import './feed.css';
 import Share from '../share/Share';
 // import { Posts } from "../../dummyData";
 import { useState, useEffect, useContext } from 'react';
-import axios from 'axios';
 import Post from '../post/Post';
 import { AuthContext } from '../../contexts/AuthContext';
+import { profilePosts, timelinePosts } from '../../servicesConfigure/post';
 
 function Feed({ username }) {
 	const [posts, setPosts] = useState([]);
@@ -14,16 +14,16 @@ function Feed({ username }) {
 		const isProfile = Boolean(username);
 		if (isProfile) {
 			const fetchUserPosts = async () => {
-				const response = await axios.get(`/posts/profile/${username}`);
-				setPosts(response.data);
+				const {data} = await profilePosts(username);
+				setPosts(data);
 			};
 			fetchUserPosts();
 		} else {
 			const fetchUserTimline = async () => {
-				const response = await axios.get(`/posts/timeline`);
-				setPosts(response.data);
+				const { data } = await timelinePosts();
+				console.log(data)
+				setPosts(data);
 			};
-
 			fetchUserTimline();
 		}
 	}, [username]);

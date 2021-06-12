@@ -1,8 +1,8 @@
 import './register.css';
 import { useRef } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import axios from 'axios';
 import { Button, Container, Grid, TextField } from '@material-ui/core';
+import { registerUser } from '../../servicesConfigure/auth';
 
 export default function Register() {
 	const history = useHistory();
@@ -36,7 +36,7 @@ export default function Register() {
 		}
 
 		try {
-			await axios.post('auth/register', {
+			await registerUser({
 				username,
 				email,
 				password

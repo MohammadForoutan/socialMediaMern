@@ -17,7 +17,7 @@ exports.createConversation = async (req, res) => {
 };
 
 exports.getConversations = async (req, res) => {
-	const userId = req.payload._id;
+	const userId = req.user._id;
 	try {
 		// find conversation and members(populate)
 		const conversations = await Conversation.find({

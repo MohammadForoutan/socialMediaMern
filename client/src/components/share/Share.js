@@ -5,9 +5,10 @@ import {
 } from '@material-ui/icons';
 import { useContext, useRef, useState } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
-import axios from 'axios';
 import { useHistory } from 'react-router';
 import { Avatar, Button, Card, Divider, Grid } from '@material-ui/core';
+import {sharePost} from '../../servicesConfigure/post'
+import { uploadImage } from '../../servicesConfigure/upload';
 
 export default function Share() {
 	const PF = process.env.REACT_APP_PUBLIC_FOLDER;
@@ -34,14 +35,14 @@ export default function Share() {
 			data.append('file', file);
 			newPost.image = fileName;
 			try {
-				await axios.post('/upload', data);
+				await uploadImage(data);
 			} catch (err) {
 				console.log(err);
 			}
 		}
 
 		try {
-			await axios.post('/posts', newPost);
+			await sharePost(newPost)
 			// push user to login and then redirected to homePage
 			history.push('/login');
 		} catch (err) {

@@ -31,13 +31,13 @@ PostSchema.methods.toggleLikePost = async function (userId) {
 		if (!hasLike) {
 			// update - add like
 			await post.updateOne({ $push: { likes: userId } });
-			res.status(200).json('post has been liked');
+			return 'post has been liked'
 		}
 		// if already like
 		else {
 			// update - remove like
 			await post.updateOne({ $pull: { likes: userId } });
-			res.status(200).json('post has been disliked');
+			return 'post has been disliked'
 		}
 	} catch (err) {
 		console.log(err);

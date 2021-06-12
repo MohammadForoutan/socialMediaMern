@@ -10,7 +10,6 @@ import {
 import { format } from 'timeago.js';
 import { useContext, useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import axios from 'axios';
 import { AuthContext } from '../../contexts/AuthContext';
 import {
 	Avatar,
@@ -20,6 +19,7 @@ import {
 	Menu,
 	MenuItem
 } from '@material-ui/core';
+import { toggleLike, deletePost } from '../../servicesConfigure/post';
 
 export default function Post({ post }) {
 	const [like, setLike] = useState(post.likes.length);
@@ -42,7 +42,7 @@ export default function Post({ post }) {
 			return;
 		}
 		try {
-			await axios.put(`/posts/${post._id}/like`);
+			await toggleLike(post)
 
 			setLike(isLiked ? like - 1 : like + 1);
 			setIsLiked(!isLiked);
@@ -65,11 +65,7 @@ export default function Post({ post }) {
 
 	const handleDeletePost = async () => {
 		try {
-			await axios.delete(`/posts/${post._id}`, {
-				data: {
-					userId: currentUser._id
-				}
-			});
+			await deletePost(post)
 
 			// go login page and then redirect to home
 			history.push('/login');
