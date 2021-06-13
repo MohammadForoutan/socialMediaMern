@@ -13,16 +13,26 @@ exports.updateUser = async (req, res) => {
 			req.user._id.toString() === req.params.id.toString() ||
 			user.isAdmin;
 		// if password updated
-		const isPasswordUpdated =
-			req.body.password && req.body.password.trim().length >= 6;
+	
 		if (!isOwner) {
 			return res.status(403).json('you can only update your account');
 		}
+
+		// if invalid field insert
+		const updates = Object.keys(req.body)
+		const allowedUpdates = ['username', 'password', 'email', 'city', 'from', 'relationship']
+		const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
+		if(!isValidOperation) {
+			return res.status(400).json('Invalid updates !!!')
+		}
 		// update password if password updated
+		const isPasswordUpdated =
+		req.body.password && req.body.password.trim().length >= 6;
 		if (isPasswordUpdated) {
 			const salt = await bcrypt.genSalt(12);
 			hashedPassword = await bcrypt.hash(req.body.password, salt);
 		}
+
 		// update user (password will updaed if password Entered )
 		await user.updateOne({
 			...req.body,
@@ -71,7 +81,11 @@ exports.getUser = async (req, res) => {
 		if (isQueryWithUserId) {
 			user = await User.findById(userId);
 		} else {
-			user = await User.findOne({ username: username });
+			user = await User.findOne({ username });
+		}
+
+		if (!user) {
+			return res.status(404).json('user not found');
 		}
 
 		// send data (without password)

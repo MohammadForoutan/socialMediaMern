@@ -6,7 +6,7 @@ const {verify} = require('../middlewares/auth')
 
 // Update user
 router.put('/:id', verify , [
-  body('email').isEmail().normalizeEmail(),
+  body('email').isEmail().normalizeEmail().toLowerCase(),
   body('password').isLength({min: 6}),
   body('username').isLength({min: 2})
 ],userController.updateUser)

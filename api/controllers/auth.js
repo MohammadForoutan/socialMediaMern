@@ -1,29 +1,29 @@
 const User = require('../models/User');
-const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
 exports.register = async (req, res) => {
 	try {
 		// get data from body
-		const { username, email, password } = req.body;
-
-
-		// generate hash password
-		const salt = await bcrypt.genSalt(12);
-		const hashedPassword = await bcrypt.hash(password, salt);
-
-		// create user
-		const user = new User({
+		const { username, email, password, _id } = req.body;
+		const newUser = {
 			username,
 			email,
-			password: hashedPassword
-		});
+			password
+		};
+
+		if(_id) {
+			newUser._id =  req.body._id
+		}
+
+		// create user
+		const user = new User(newUser);
 
 		const token = await user.generateAuthToken();
 
 		// save user and response
 		await user.save();
-		res.status(200).json({ user, token });
+		const { password: hashedPassword, ...others } = user._doc;
+		res.status(201).json({ user: others, token });
 	} catch (err) {
 		console.log(err);
 		res.status(500).json(err);

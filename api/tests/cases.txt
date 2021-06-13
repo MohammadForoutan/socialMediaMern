@@ -1,0 +1,17 @@
+// auth //
+# login [email, password]
+  + check email (not email , not existent email)
+  + check password (length, wrong password)
+
+# register  [username, email, password, confirm-password]
+  + check username (length, already exist)
+  + check email (not email, already exist) - [normalize email and insert]
+  + check password (length, wrong password)
+  + check confirm-password (match)
+
+// user
+# 
+write more :]
+
+
+ 
