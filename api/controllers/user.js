@@ -1,18 +1,20 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
+const { validationResult } = require('express-validator');
 
 exports.updateUser = async (req, res) => {
 	try {
-		let hashedPassword;
-
+		// get error
+		const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+			return res.status(400).json({ errors: errors.array() });
+		}
 		// find user
 		const user = await User.findById(req.params.id);
-
 		// is user owner of account
 		const isOwner =
 			req.user._id.toString() === req.params.id.toString() ||
 			user.isAdmin;
-		// if password updated
 	
 		if (!isOwner) {
 			return res.status(403).json('you can only update your account');
@@ -28,6 +30,7 @@ exports.updateUser = async (req, res) => {
 		// update password if password updated
 		const isPasswordUpdated =
 		req.body.password && req.body.password.trim().length >= 6;
+		let hashedPassword;
 		if (isPasswordUpdated) {
 			const salt = await bcrypt.genSalt(12);
 			hashedPassword = await bcrypt.hash(req.body.password, salt);
@@ -50,15 +53,17 @@ exports.updateUser = async (req, res) => {
 exports.deleteUser = async (req, res) => {
 	try {
 		// find user
-		const user = await User.findById(req.params._id);
+		const user = await User.findById(req.params.id);
 		// is user owner of account
-		const isOwner = req.user._id === req.params.id || user.isAdmin;
+		const isOwner = req.user._id.toString() === req.params.id.toString() || req.user.isAdmin;
+
+
 		// delete User
 		if (isOwner) {
 			await user.deleteOne();
 			return res
 				.status(200)
-				.json('account has been updated successfully');
+				.json('account has been deleted successfully');
 		}
 		// if not Owner
 		else {
@@ -112,11 +117,11 @@ exports.searchUsers = async (req, res) => {
 
 exports.followUser = async (req, res) => {
 	try {
-		const isYourSelf = req.user._id === req.params.id;
+		const isYourSelf = req.user._id.toString() === req.params.id.toString();
 
 		// user can follow user (can't user her/himself)
 		if (isYourSelf) {
-			return res.status(403).json("you can't follow yourself");
+			return res.status(400).json("you can't follow yourself");
 		}
 
 		const user = await User.findById(req.params.id);

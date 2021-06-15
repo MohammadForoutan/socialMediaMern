@@ -1,17 +1,44 @@
 // auth //
-# login [email, password]
+# login
   + check email (not email , not existent email)
   + check password (length, wrong password)
 
-# register  [username, email, password, confirm-password]
+# register
   + check username (length, already exist)
   + check email (not email, already exist) - [normalize email and insert]
-  + check password (length, wrong password)
+  + check password (length)
   + check confirm-password (match)
 
 // user
-# 
-write more :]
+# updateUser
+  + check email (normalizeEmail, toLowerCase)
+  + check password (length, wrong password)
+  + check username (length, already exist)
+  + check user (isExist, isOwner, admin)
+  + check password (isPasswordUpdated)
+  + check datas (invalid data, valid data)
 
+# deleteUser
+  + check isAdmin (true, false)
+  + check isOwner (true, false)
 
+# getUser
+  + check getUser (with userId, username)
+  + check getUser (NOT FOUND)
+  + check getUser (NO Query)
+
+# searchUsers
+  + check search and get a user
+  + check no text request
+
+# followUser
+  + check (isYourSelf 400) (hasUserFollowed 400)
+  + check follweings list and followers list of contact
+
+# unfollowUser
+  + check (isYourSelf 400) (hasUserFollowed 400)
+  + check follweings list and followers list of contact
+
+#getUserFollowings
+  + check (CorrectData or not)
  

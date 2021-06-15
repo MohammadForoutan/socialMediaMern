@@ -1,19 +1,22 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
+const { validationResult } = require('express-validator');
 
 exports.register = async (req, res) => {
 	try {
+		// get error
+		const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+			return res.status(400).json({ errors: errors.array() });
+		}
 		// get data from body
 		const { username, email, password, _id } = req.body;
 		const newUser = {
+			_id: _id,
 			username,
 			email,
 			password
 		};
-
-		if(_id) {
-			newUser._id =  req.body._id
-		}
 
 		// create user
 		const user = new User(newUser);
@@ -32,6 +35,11 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
 	try {
+		// get error
+		const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+			return res.status(400).json({ errors: errors.array() });
+		}
 		// get data
 		const { email, password } = req.body;
 		// find user
@@ -65,12 +73,12 @@ exports.logout = async (req, res) => {
 		const token = req.token;
 
 		if (!user && !token) {
-			return res.status(403).json({ message: 'ok' });
+			return res.status(400).json({ message: 'user and token should be provided' });
 		}
 
 		await user.logout(token);
 
-		res.json({ message: 'user logout successfully' });
+		res.status(200).json({ message: 'user logout successfully' });
 	} catch (err) {
 		console.log(err);
 	}
@@ -82,12 +90,12 @@ exports.logoutAll = async (req, res) => {
 		const token = req.token;
 
 		if (!user && !token) {
-			return res.status(403).json({ message: 'ok' });
+			return res.status(403).json({ message: 'user and token should be provided' });
 		}
 
 		await user.logoutAll();
 
-		res.json({ message: 'all sessions logout successfully' });
+		res.status(200).json({ message: 'all sessions logout successfully', tokens: user.tokens });
 	} catch (err) {
 		console.log(err);
 	}
