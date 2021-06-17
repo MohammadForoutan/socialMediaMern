@@ -10,35 +10,19 @@
   + check confirm-password (match)
 
 // user
-# updateUser
-  + check email (normalizeEmail, toLowerCase)
-  + check password (length, wrong password)
-  + check username (length, already exist)
-  + check user (isExist, isOwner, admin)
-  + check password (isPasswordUpdated)
-  + check datas (invalid data, valid data)
-
-# deleteUser
-  + check isAdmin (true, false)
-  + check isOwner (true, false)
-
-# getUser
-  + check getUser (with userId, username)
-  + check getUser (NOT FOUND)
-  + check getUser (NO Query)
-
-# searchUsers
-  + check search and get a user
-  + check no text request
-
-# followUser
-  + check (isYourSelf 400) (hasUserFollowed 400)
-  + check follweings list and followers list of contact
-
-# unfollowUser
-  + check (isYourSelf 400) (hasUserFollowed 400)
-  + check follweings list and followers list of contact
-
 #getUserFollowings
   + check (CorrectData or not)
+
+// post
+#getPost
+#like post
+#unlike post
+#likes [count, who likes]
+
+
+
+// messages
+
+
+// conversations
  

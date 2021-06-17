@@ -1,7 +1,14 @@
+const { validationResult } = require('express-validator');
 const Post = require('../models/Post');
 const User = require('../models/User');
 
 exports.createPost = async (req, res) => {
+	// get error
+	const errors = validationResult(req);
+	if(!errors.isEmpty()) {
+		return res.status(400).json(errors.array())
+	}
+
 	// create new Post
 	const newPost = new Post({
 		userId: req.user._id,
@@ -13,7 +20,7 @@ exports.createPost = async (req, res) => {
 		// save post
 		const savedPost = await newPost.save();
 		// send post
-		res.status(200).json('post created');
+		res.status(201).json(savedPost);
 	} catch (err) {
 		console.log(err);
 		res.status(500).json(err);
@@ -21,6 +28,13 @@ exports.createPost = async (req, res) => {
 };
 
 exports.updatePost = async (req, res) => {
+
+	// get error
+	const errors = validationResult(req);
+	if(!errors.isEmpty()) {
+		return res.status(400).json(errors.array())
+	}
+	
 	const postId = req.params.id;
 	try {
 		// find post
@@ -48,9 +62,9 @@ exports.deletePost = async (req, res) => {
 		const isAuthor = post.userId.toString() === req.user._id.toString();
 		if (isAuthor) {
 			await post.deleteOne();
-			res.status(201).json('post has been deleted');
+			return res.status(200).json('post has been deleted');
 		} else {
-			res.status(403).json('you can delete only your post');
+			return res.status(403).json('you can delete only your post');
 		}
 	} catch (err) {
 		console.log(err);

@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "start": "env-cmd -f ./config/dev.env nodemon ./index.js",
-    "test": "env-cmd -f ./config/test.env jest --watch --runInBand"
+    "test": "env-cmd -f ./config/test.env jest --watch --runInBand",
+    "m-test": "env-cmd -f ./config/test.env jest post.test.js --watch"
   },
   "jest": {
     "testEnvirement": "node"

@@ -296,3 +296,5 @@ test('should unfollow a user', async () => {
 	expect(Array.from(unFollowedcontact.followers)).toEqual([]);
 	expect(Array.from(unFollowedcontact.followers)).toEqual([]);
 });
+
+// -- get-followings
