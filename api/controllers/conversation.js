@@ -2,17 +2,22 @@ const Conversation = require('../models/Conversation');
 
 exports.createConversation = async (req, res) => {
 	const { senderId, receiverId } = req.body;
-	// create new conversation
-	const newConversation = new Conversation({
+
+	const existConversation = await Conversation.findOne({
 		members: [senderId, receiverId]
 	});
+	if(!existConversation) {
+		// create new conversation
+		const conversation = new Conversation({
+			members: [senderId, receiverId]
+		});
+		console.log('conversation created');
+		const newConversation = await conversation.save();
+		res.status(200).json(newConversation);
 
-	try {
-		const savedConversation = await newConversation.save();
-		res.status(200).json(savedConversation);
-	} catch (err) {
-		console.log(err);
-		res.status(500).json(err);
+	} else {
+		console.log('conversation exist');
+		res.status(200).json(existConversation);
 	}
 };
 
@@ -22,7 +27,7 @@ exports.getConversations = async (req, res) => {
 		// find conversation and members(populate)
 		const conversations = await Conversation.find({
 			members: { $in: [userId] }
-		}).populate({model: 'User', path: 'members'});
+		}).populate({ model: 'User', path: 'members' });
 		// send conversations
 		res.status(200).json(conversations);
 	} catch (err) {
