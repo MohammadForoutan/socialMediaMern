@@ -21,7 +21,8 @@ exports.updateUser = async (req, res) => {
 		}
 
 		// if invalid field insert
-		const updates = Object.keys(req.body)
+		const updates = Object.keys(req.body);
+		console.log(updates)
 		const allowedUpdates = ['username', 'password', 'email', 'city', 'from', 'relationship']
 		const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
 		if(!isValidOperation) {
