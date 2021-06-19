@@ -15,7 +15,6 @@ const postRoute = require('./routes/post');
 const messageRoute = require('./routes/message');
 const conversationRoute = require('./routes/conversation');
 const { verify } = require('./middlewares/auth');
-const User = require('./models/User');
 
 dotenv.config();
 

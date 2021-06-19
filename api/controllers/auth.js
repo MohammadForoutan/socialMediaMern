@@ -25,6 +25,8 @@ exports.register = async (req, res) => {
 
 		// save user and response
 		await user.save();
+		
+		// eslint-disable-next-line
 		const { password: hashedPassword, ...others } = user._doc;
 		res.status(201).json({ user: others, token });
 	} catch (err) {

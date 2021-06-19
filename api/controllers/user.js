@@ -95,6 +95,7 @@ exports.getUser = async (req, res) => {
 		}
 
 		// send data (without password)
+		// eslint-disable-next-line
 		const { password, updatedAt, ...others } = user._doc;
 		res.status(200).json(others);
 	} catch (err) {
@@ -172,9 +173,11 @@ exports.unFollowUser = async (req, res) => {
 			console.log("you can't unfollow yourself");
 			return res.status(403).json("you can't unfollow yourself");
 		}
+		/*
 		const user = await User.findById(req.params.id);
 		const { password, updatedAt, ...others } = user._doc;
 		res.status(200).json(others);
+		*/
 	} catch (err) {
 		console.log(err);
 		res.status(500).json(err);

@@ -11,7 +11,6 @@ exports.createConversation = async (req, res) => {
 		const conversation = new Conversation({
 			members: [senderId, receiverId]
 		});
-		console.log('conversation created');
 		const newConversation = await conversation.save();
 		res.status(200).json(newConversation);
 

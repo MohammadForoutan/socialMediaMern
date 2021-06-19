@@ -10,12 +10,15 @@ export default function Message({ conversation, message, currentUser }) {
 
 	// set avatar
 	let avatar;
-	if(isOwn) {avatar = currentUser.avatar}
-	else {avatar = contact[0].avatar}
+	if (isOwn) {
+		avatar = currentUser.avatar;
+	} else {
+		avatar = contact[0].avatar;
+	}
 
 	return (
 		<div className={isOwn ? 'message own' : 'message'}>
-			<div className="message__header">
+			{/*	<div className="message__header">
 				<img
 					src={
 						avatar ? PF+avatar : PF+'person/defaultAvatar.jpeg'
@@ -30,6 +33,8 @@ export default function Message({ conversation, message, currentUser }) {
 					{format(message.createdAt)}
 				</span>
 			</div>
+				*/}
+			<span className="message__date" style={{ float: 'right' }}>{format(message.createdAt)}</span>
 			<div className="message__body">
 				<p>{message.text}</p>
 			</div>

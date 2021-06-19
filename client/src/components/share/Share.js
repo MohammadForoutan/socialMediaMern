@@ -30,7 +30,7 @@ export default function Share() {
 
 		if (file) {
 			const data = new FormData();
-			const fileName = Math.random() + '-' + Date.now() + '-' + file.name;
+			const fileName = 'file-' + Math.random() + '-' + Date.now() + '-' + file.name;
 			data.append('name', fileName);
 			data.append('file', file);
 			newPost.image = fileName;

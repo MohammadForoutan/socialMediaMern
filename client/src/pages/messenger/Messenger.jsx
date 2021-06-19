@@ -20,8 +20,9 @@ import {
 import Message from '../../components/message/Message';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { AuthContext } from '../../contexts/AuthContext';
-import axios from 'axios';
 import { io } from 'socket.io-client';
+import { getUserConversations } from '../../servicesConfigure/conversation';
+import { sendMessage, getConversationMessages } from '../../servicesConfigure/message';
 
 export default function Messenger() {
 	const PF = process.env.REACT_APP_PUBLIC_FOLDER;
@@ -58,8 +59,9 @@ export default function Messenger() {
 
 		try {
 			// send to api - DB
-			const response = await axios.post('/messages', message);
-			setMessages([...messages, response.data]);
+			const {data} = await sendMessage(message)
+			console.log(data);
+			setMessages([...messages, message]);
 			setNewMessage('');
 		} catch (err) {
 			console.log(err);
@@ -97,10 +99,9 @@ export default function Messenger() {
 	useEffect(() => {
 		const fetchConversations = async () => {
 			try {
-				const response = await axios.get(
-					`/conversations/${currentUser._id}`
-				);
-				setConverSations(response.data);
+				const {data} = await getUserConversations(currentUser)
+				
+				setConverSations(data);
 			} catch (err) {
 				console.log(err);
 			}
@@ -118,10 +119,8 @@ export default function Messenger() {
 	useEffect(() => {
 		const fetchMessages = async () => {
 			try {
-				const reposne = await axios.get(
-					`/messages/${currentConversation._id}`
-				);
-				setMessages(reposne.data);
+				const {data} = await getConversationMessages(currentConversation);
+				setMessages(data);
 			} catch (err) {
 				console.log(err);
 			}

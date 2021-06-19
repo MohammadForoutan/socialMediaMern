@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
 exports.verify = async (req, res, next) => {
-	token = req.header('Authorization');
+	let token = req.header('Authorization');
 	if (!token) {
 		return res.status(403).json({ error: 'token is not exist' });
 	}

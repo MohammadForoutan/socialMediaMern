@@ -11,8 +11,8 @@ export const unfollowUser =(userId) => {
   return http.put(`${config.api}/users/${userId}/unfollow`) 
 }
 
-export const getFollowings = (user) => {
-  return http.get(`${config.api}/users/followings/${user._id}`)
+export const getFollowings = (userId) => {
+  return http.get(`${config.api}/users/followings/${userId}`)
 }
 
 export const getSearchUser = (username) => {

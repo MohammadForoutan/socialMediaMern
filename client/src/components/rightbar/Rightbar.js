@@ -6,6 +6,7 @@ import {
 	Add,
 	Home,
 	LocationOn,
+	Message,
 	MoreVertRounded,
 	Remove,
 	Wc
@@ -29,6 +30,7 @@ import {
 	followUser,
 	getFollowings
 } from '../../servicesConfigure/user';
+import { findOrCreateConversation } from '../../servicesConfigure/conversation';
 
 export default function Rightbar({ user }) {
 	const PF = process.env.REACT_APP_PUBLIC_FOLDER;
@@ -64,8 +66,8 @@ export default function Rightbar({ user }) {
 		useEffect(() => {
 			const fetchFollowings = async () => {
 				try {
-					const response = await getFollowings(currentUser);
-					setFollowings(response.data);
+					const {data} = await getFollowings(currentUser._id);
+					setFollowings(data);
 				} catch (err) {
 					console.log(err);
 				}
@@ -77,9 +79,8 @@ export default function Rightbar({ user }) {
 			<Card className="righbar__card">
 				<h4>Followings</h4>
 				{followings.map((following) => (
-					<>
+					<div key={following._id}>
 						<CardHeader
-							key={following._id}
 							avatar={
 								<Link to={`/profile/${following.username}`}>
 									<Avatar
@@ -122,22 +123,28 @@ export default function Rightbar({ user }) {
 								unfollow <Remove color="secondary" />
 							</MenuItem>
 						</Menu>
-					</>
+					</div>
 				))}
 			</Card>
 		);
 	};
 
 	const ProfileRightbar = () => {
+		const history = useHistory()
 		// followings of user in his/her profile
 		const [followings, setFollowings] = useState([]);
 		const [followed, setFollowed] = useState(false);
 
+		const handleStartConversation = async() => {
+			await findOrCreateConversation(currentUser._id, user._id);
+			history.push('/messenger')
+
+		}
 		useEffect(() => {
 			const fetchFollowings = async () => {
 				if (!user?._id) return;
-				const response = await getFollowings(user);
-				setFollowings(response.data);
+				const {data} = await getFollowings(user._id);
+				setFollowings(data);
 			};
 
 			fetchFollowings();
@@ -180,6 +187,13 @@ export default function Rightbar({ user }) {
 						<br />
 						<br />
 					</>
+				)}
+
+				{followed && (
+					<Button onClick={handleStartConversation} color="primary" variant="contained">
+						Start conversation &nbsp;&nbsp;
+						<Message />
+					</Button>
 				)}
 				<Card>
 					<List>

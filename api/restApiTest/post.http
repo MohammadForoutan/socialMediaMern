@@ -1,0 +1,9 @@
+POST http://localhost:8800/api/auth/register HTTP/1.1
+content-type: application/json
+
+{
+    "username": "user!",
+	"email": "Alia@asd.com",
+	"password": "thiassIsPassword",
+	"confirmPassword": "thiassIsPassword"
+}

@@ -18,7 +18,7 @@ import {
 import { Alert } from '@material-ui/lab';
 import { AuthContext } from '../../contexts/AuthContext';
 import { getUserByUsername, updateUser } from '../../servicesConfigure/user';
-import {uploadImage} from '../../servicesConfigure/upload'
+import {uploadAvatar, uploadCover} from '../../servicesConfigure/upload'
 
 export default function Profile() {
 	const { user: currentUser, dispatch } = useContext(AuthContext);
@@ -75,8 +75,7 @@ export default function Profile() {
 			email,
 			city,
 			from,
-			relationship,
-			userId: currentUser._id
+			relationship
 		};
 
 		if (password.length >= 6) {
@@ -94,7 +93,7 @@ export default function Profile() {
 			data.append('file', cover);
 			updateProfile.cover = coverName;
 			try {
-				await uploadImage(data);
+				await uploadCover(data);
 			} catch (err) {
 				console.log(err);
 			}
@@ -102,7 +101,8 @@ export default function Profile() {
 
 		let avatarName;
 		if (avatar) {
-			const data = new FormData();
+			const data =
+			 new FormData();
 			avatarName =
 				'avatar-' +
 				Math.random() +
@@ -114,7 +114,7 @@ export default function Profile() {
 			data.append('file', avatar);
 			updateProfile.avatar = avatarName;
 			try {
-				await uploadImage(data);
+				await uploadAvatar(data);
 			} catch (err) {
 				console.log(err);
 			}
