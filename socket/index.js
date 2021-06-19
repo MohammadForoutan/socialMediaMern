@@ -12,7 +12,6 @@ const addUser = (userId, socketId) => {
   
 	if (!isUserExist) {
     users.push({ userId, socketId });
-    console.log({ userId, socketId } + " added")
 	}
 
 };
@@ -41,7 +40,6 @@ io.on('connection', (socket) => {
 	socket.on('sendMessage', ({ senderId, receiverId, text }) => {
 		const user = getUser(receiverId);
     if(user) {
-			console.log({ senderId, receiverId, text, user })
       io.to(user.socketId).emit('getMessage', {
         senderId,
         text
