@@ -35,9 +35,10 @@ const storage = multer.diskStorage({
 	filename: (req, file, cb) => {
 		cb(
 			null,
-			`${file.fieldname}-${Math.random()}-${Date.now()}-${
-				file.originalname
-			}`
+			req.body.name
+			// `${file.fieldname}-${Math.random()}-${Date.now()}-${
+			// 	file.originalname
+			// }`
 		);
 	}
 });
@@ -52,7 +53,17 @@ app.use(cookieParser());
 app.use('/images', express.static(path.join(__dirname, 'public', 'images')));
 
 app.post('/api/upload', verify, upload.single('file'), async(req, res) => {
-	req.user.avatar = req.file.path
+	res.status(200).json('File uploaded');
+});
+
+app.post('/api/upload/avatar', verify, upload.single('file'), async(req, res) => {
+	req.user.avatar = req.file.filename
+	await req.user.save()
+	res.status(200).json('File uploaded');
+});
+
+app.post('/api/upload/cover', verify, upload.single('file'), async(req, res) => {
+	req.user.cover = req.file.filename
 	await req.user.save()
 	res.status(200).json('File uploaded');
 });
