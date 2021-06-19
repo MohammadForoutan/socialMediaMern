@@ -44,7 +44,6 @@ test('should upload profile image', async () => {
 		.post('/api/upload')
 		.set('Authorization', `Bearer ${userOne.tokens[0].token}`)
 		.attach('file', 'tests/fixtures/profile-pic.jpg')
-		.field('name', 'file')
 		.expect(200);
 
 	// test is updated successfully
