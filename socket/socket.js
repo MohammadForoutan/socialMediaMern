@@ -1,8 +1,9 @@
-const { addUser, removeUser, getUser, users } = require('./handleUsers');
+const { addUser, removeUser, getUser } = require('./handleUsers');
+const io = require('./io');
+let users = require('./users');
 
-exports.addUser = (userId) => {
-  addUser(userId, socket.id);
-  io.emit('getUsers', users);
+exports.addUser = (userId, socket) => {
+  addUser(userId, socket);
 };
 
 exports.sendMessage = ({ senderId, receiverId, text }) => {
@@ -15,7 +16,7 @@ exports.sendMessage = ({ senderId, receiverId, text }) => {
   }
 };
 
-exports.disconnect = () => {
+exports.disconnect = (socket) => {
   removeUser(socket.id);
   io.emit('getUsers', users);
 };

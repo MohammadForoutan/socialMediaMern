@@ -12,7 +12,7 @@ router.post(
 		body('username')
 			.trim()
 			.isLength({ min: 2 })
-			.custom(async(value) => {
+			.custom(async (value) => {
 				const user = await User.findOne({ username: value });
 				if (user) {
 					return Promise.reject(
@@ -21,15 +21,20 @@ router.post(
 				}
 				return Promise.resolve();
 			}),
-		body('email').trim().isEmail().normalizeEmail().toLowerCase().custom(async(value) => {
-			const user = await User.findOne({email: value})
-			if(user) {
-				return Promise.reject(
-					'a account with this username already exist'
-				);
-			}
-			return Promise.resolve();
-		}),
+		body('email')
+			.trim()
+			.isEmail()
+			.normalizeEmail()
+			.toLowerCase()
+			.custom(async (value) => {
+				const user = await User.findOne({ email: value });
+				if (user) {
+					return Promise.reject(
+						'a account with this username already exist'
+					);
+				}
+				return Promise.resolve();
+			}),
 		body('password').trim().isLength({ min: 6 }),
 		body('confirmPassword').custom((value, { req }) => {
 			const isEqual = value === req.body.password;
@@ -39,7 +44,7 @@ router.post(
 				);
 			}
 			return Promise.resolve();
-		})
+		}),
 	],
 	authController.register
 );
@@ -48,7 +53,7 @@ router.post(
 	'/login',
 	[
 		body('email').trim().isEmail().normalizeEmail().toLowerCase(),
-		body('password').trim().isLength({ min: 6 })
+		body('password').trim().isLength({ min: 6 }),
 	],
 	authController.login
 );

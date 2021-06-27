@@ -1,22 +1,14 @@
-const io = require('socket.io')(8900, {
-  cors: {
-    origin: 'http://localhost:3000',
-  },
-});
+const io = require('./io');
 
-const {
-  addUserSocket,
-  sendMessageSocket,
-  disconnectSocket,
-} = require('./socket');
+const { addUser, sendMessage, disconnect } = require('./socket');
 
 io.on('connection', (socket) => {
   // Take UserId and SocketId
-  socket.on('addUser', addUserSocket);
+  socket.on('addUser', (userId) => addUser(userId, socket));
 
   // Send and Get message
-  socket.on('sendMessage', sendMessageSocket);
+  socket.on('sendMessage', (message) => sendMessage(message));
 
   // Disconnection
-  socket.on('disconnect', disconnectSocket);
+  socket.on('disconnect', () => disconnect(socket));
 });

@@ -1,15 +1,17 @@
-export const users = [];
-exports.addUser = (userId, socketId) => {
+let users = require('./users');
+const io = require('./io');
+
+exports.addUser = (userId, socket) => {
   const isUserExist = users.some((user) => user.userId === userId);
 
   if (!isUserExist) {
-    users.push({ userId, socketId });
+    users.push({ userId, socketId: socket.id });
   }
+  io.emit('getUsers', users);
 };
 
 exports.removeUser = (socketId) => {
   users = users.filter((user) => user.socketId !== socketId);
-  console.log(users);
 };
 
 exports.getUser = (userId) => {
