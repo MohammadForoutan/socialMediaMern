@@ -82,7 +82,7 @@ app.use('/api/posts', postRoute);
 app.use('/api/conversations', conversationRoute);
 app.use('/api/messages', messageRoute);
 
-app.use((error, req, res) => {
+app.use((error, req, res, next) => {
 	console.log(error);
 	res.status(500).json('500 something wrong in server');
 });
