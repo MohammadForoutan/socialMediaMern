@@ -6,7 +6,7 @@ exports.createConversation = async (req, res, next) => {
 
 	try {
 		const existConversation = await Conversation.findOne({
-			members: [senderId, receiverId],
+			members: { $all: [senderId, receiverId] },
 		});
 
 		if (existConversation) {
