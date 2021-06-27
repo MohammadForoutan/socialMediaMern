@@ -1,27 +1,24 @@
 const Message = require('../models/Message');
+const { expressErrHandler } = require('../util/error');
 
-exports.createMessage = async (req, res) => {
+exports.createMessage = async (req, res, next) => {
 	// create new Message
 	const { sender, text, conversationId } = req.body;
-	const newMessage = new Message({sender, text, conversationId});
+	const newMessage = new Message({ sender, text, conversationId });
 	try {
-		// save message
 		await newMessage.save();
 		res.status(200).json('Message saved');
 	} catch (err) {
-		console.log(err);
-		res.status(500).json(err);
+		expressErrHandler(err, next);
 	}
 };
 
-exports.getMessages = async (req, res) => {
+exports.getMessages = async (req, res, next) => {
+	const { conversationId } = req.params;
 	try {
-		const { conversationId } = req.params;
-		// find messages of a conversation
 		const messages = await Message.find({ conversationId });
 		res.status(200).json(messages);
 	} catch (err) {
-		console.log(err);
-		res.status(500).json(err);
+		expressErrHandler(err, next);
 	}
 };

@@ -6,22 +6,27 @@ const PostSchema = new Schema(
 		userId: {
 			type: Schema.Types.ObjectId,
 			ref: 'User',
-			required: true
+			required: true,
 		},
 		description: {
 			type: String,
-			max: 500
+			max: 500,
 		},
 		image: {
-			type: String
+			type: String,
 		},
 		likes: {
 			type: Array,
-			default: []
-		}
+			default: [],
+		},
 	},
 	{ timestamps: true }
 );
+
+PostSchema.methods.isAuthor = function (userId) {
+	const post = this;
+	return post.userId.toString() === userId.toString();
+};
 
 PostSchema.methods.toggleLikePost = async function (userId) {
 	const post = this;
@@ -31,13 +36,13 @@ PostSchema.methods.toggleLikePost = async function (userId) {
 		if (!hasLike) {
 			// update - add like
 			await post.updateOne({ $push: { likes: userId } });
-			return 'post has been liked'
+			return 'post has been liked';
 		}
 		// if already like
 		else {
 			// update - remove like
 			await post.updateOne({ $pull: { likes: userId } });
-			return 'post has been disliked'
+			return 'post has been disliked';
 		}
 	} catch (err) {
 		console.log(err);
@@ -53,7 +58,7 @@ PostSchema.statics.getTimeLine = async function (user) {
 	).populate({
 		model: 'User',
 		path: 'userId',
-		select: 'avatar username'
+		select: 'avatar username',
 	});
 
 	return timelinePosts;
@@ -62,11 +67,11 @@ PostSchema.statics.getTimeLine = async function (user) {
 PostSchema.statics.findUserPosts = async function (userId) {
 	// find user's posts
 	const posts = await this.find({ userId }, null, {
-		sort: { createdAt: -1 }
+		sort: { createdAt: -1 },
 	}).populate({
 		path: 'userId',
 		model: 'User',
-		select: 'avatar username'
+		select: 'avatar username',
 	});
 
 	return posts;

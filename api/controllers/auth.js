@@ -1,104 +1,97 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const { validationResult } = require('express-validator');
+const { expressErrHandler } = require('../util/error');
 
-exports.register = async (req, res) => {
+exports.register = async (req, res, next) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return res.status(400).json({ errors: errors.array() });
+	}
 	try {
-		// get error
-		const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-			return res.status(400).json({ errors: errors.array() });
-		}
-		// get data from body
 		const { username, email, password, _id } = req.body;
 		const newUser = {
 			_id: _id,
 			username,
 			email,
-			password
+			password,
 		};
 
 		// create user
 		const user = new User(newUser);
-
 		const token = await user.generateAuthToken();
-
-		// save user and response
 		await user.save();
-		
+
 		// eslint-disable-next-line
 		const { password: hashedPassword, ...others } = user._doc;
 		res.status(201).json({ user: others, token });
 	} catch (err) {
-		console.log(err);
-		res.status(500).json(err);
+		expressErrHandler(err, next);
 	}
 };
 
-exports.login = async (req, res) => {
+exports.login = async (req, res, next) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return res.status(400).json({ errors: errors.array() });
+	}
 	try {
-		// get error
-		const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-			return res.status(400).json({ errors: errors.array() });
-		}
-		// get data
 		const { email, password } = req.body;
-		// find user
 		const user = await User.findOne({ email });
 
-		// if no found
 		if (!user) {
-			return res.status(404).json('user not found');
+			return res.status(404).json({ message: 'user not found' });
 		}
 
 		// validate password
 		const isMatch = await bcrypt.compare(password, user.password);
 		if (!isMatch) {
-			return res.status(400).json('wrong password');
+			return res.status(400).json({ message: 'wrong password' });
 		}
 
 		// generate token
 		const token = await user.generateAuthToken();
 
-		// successfully login and response
 		res.status(200).json({ user, token });
 	} catch (err) {
-		console.log(err);
-		res.status(500).json(err);
+		expressErrHandler(err, next);
 	}
 };
 
-exports.logout = async (req, res) => {
+exports.logout = async (req, res, next) => {
+	const user = req.user;
+	const token = req.token;
+	// both user and token required
+	if (!user && !token) {
+		return res
+			.status(400)
+			.json({ message: 'user and token should be provided' });
+	}
 	try {
-		const user = req.user;
-		const token = req.token;
-
-		if (!user && !token) {
-			return res.status(400).json({ message: 'user and token should be provided' });
-		}
-
 		await user.logout(token);
-
 		res.status(200).json({ message: 'user logout successfully' });
 	} catch (err) {
-		console.log(err);
+		expressErrHandler(err, next);
 	}
 };
 
-exports.logoutAll = async (req, res) => {
+exports.logoutAll = async (req, res, next) => {
+	const user = req.user;
+	const token = req.token;
+	// both user and token required
+	if (!user && !token) {
+		return res
+			.status(403)
+			.json({ message: 'user and token should be provided' });
+	}
 	try {
-		const user = req.user;
-		const token = req.token;
-
-		if (!user && !token) {
-			return res.status(403).json({ message: 'user and token should be provided' });
-		}
-
 		await user.logoutAll();
 
-		res.status(200).json({ message: 'all sessions logout successfully', tokens: user.tokens });
+		res.status(200).json({
+			message: 'all sessions logout successfully',
+			tokens: user.tokens,
+		});
 	} catch (err) {
-		console.log(err);
+		expressErrHandler(err, next);
 	}
 };

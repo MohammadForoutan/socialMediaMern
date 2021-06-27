@@ -1,86 +1,77 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const { validationResult } = require('express-validator');
+const validFields = require('../util/validUserFields');
+const { expressErrHandler } = require('../util/error');
 
-exports.updateUser = async (req, res) => {
+exports.updateUser = async (req, res, next) => {
+	// get error
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return res.status(400).json({ errors: errors.array() });
+	}
+	const userId = req.params.id;
 	try {
-		// get error
-		const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-			return res.status(400).json({ errors: errors.array() });
-		}
-		// find user
-		const user = await User.findById(req.params.id);
+		const user = await User.findById(userId);
 		// is user owner of account
-		const isOwner =
-			req.user._id.toString() === req.params.id.toString() ||
-			user.isAdmin;
-	
+		const isOwner = user.isOwner(req.user._id, userId);
+
 		if (!isOwner) {
 			return res.status(403).json('you can only update your account');
 		}
 
 		// if invalid field insert
 		const updates = Object.keys(req.body);
-		console.log(updates)
-		const allowedUpdates = ['username', 'password', 'email', 'city', 'from', 'relationship']
-		const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
-		if(!isValidOperation) {
-			return res.status(400).json('Invalid updates !!!')
+		const isValidOperation = updates.every((update) =>
+			validFields.includes(update)
+		);
+		if (!isValidOperation) {
+			return res.status(400).json('Invalid updates !!!');
 		}
 		// update password if password updated
 		const isPasswordUpdated =
-		req.body.password && req.body.password.trim().length >= 6;
-		let hashedPassword;
+			req.body.password && req.body.password.trim().length >= 6;
 		if (isPasswordUpdated) {
 			const salt = await bcrypt.genSalt(12);
-			hashedPassword = await bcrypt.hash(req.body.password, salt);
+			const hashedPassword = await bcrypt.hash(req.body.password, salt);
+			await user.updateOne({ ...req.body, password: hashedPassword });
 		}
 
 		// update user (password will updaed if password Entered )
 		await user.updateOne({
 			...req.body,
-			password: hashedPassword || user.password
+			password: user.password,
 		});
 
 		// send response
 		res.status(200).json('account has been updated');
 	} catch (err) {
-		console.log(err);
-		res.status(500).json(err);
+		expressErrHandler(err, next);
 	}
 };
 
-exports.deleteUser = async (req, res) => {
+exports.deleteUser = async (req, res, next) => {
+	const userId = req.params.id;
 	try {
-		// find user
-		const user = await User.findById(req.params.id);
-		// is user owner of account
-		const isOwner = req.user._id.toString() === req.params.id.toString() || req.user.isAdmin;
+		const user = await User.findById(req.user._id, userId);
+		const isOwner = user.isOwner(req.user._id, userId);
 
-
-		// delete User
-		if (isOwner) {
-			await user.deleteOne();
-			return res
-				.status(200)
-				.json('account has been deleted successfully');
-		}
-		// if not Owner
-		else {
+		if (!isOwner) {
 			return res.status(403).json('you can only delete your account');
 		}
+
+		// delete User
+
+		await user.deleteOne();
+		return res.status(200).json('account has been deleted successfully');
 	} catch (err) {
-		console.log(err);
-		res.status(500).json(err);
+		expressErrHandler(err, next);
 	}
 };
 
-exports.getUser = async (req, res) => {
+exports.getUser = async (req, res, next) => {
+	const { userId, username } = req.query;
 	try {
-		// take data
-		const { userId, username } = req.query;
-
 		let user;
 		// find user with userId or username
 		const isQueryWithUserId = Boolean(userId);
@@ -99,12 +90,11 @@ exports.getUser = async (req, res) => {
 		const { password, updatedAt, ...others } = user._doc;
 		res.status(200).json(others);
 	} catch (err) {
-		console.log(err);
-		res.status(500).json(err);
+		expressErrHandler(err, next);
 	}
 };
 
-exports.searchUsers = async (req, res) => {
+exports.searchUsers = async (req, res, next) => {
 	const { username } = req.query;
 	try {
 		const users = await User.find(
@@ -113,94 +103,77 @@ exports.searchUsers = async (req, res) => {
 		);
 		res.status(200).json(users);
 	} catch (err) {
-		console.log(err);
+		expressErrHandler(err, next);
 	}
 };
 
-exports.followUser = async (req, res) => {
+exports.followUser = async (req, res, next) => {
 	try {
 		const isYourSelf = req.user._id.toString() === req.params.id.toString();
 
-		// user can follow user (can't user her/himself)
+		// user can follow yourself
 		if (isYourSelf) {
 			return res.status(400).json("you can't follow yourself");
 		}
 
-		const user = await User.findById(req.params.id);
+		const contactUser = await User.findById(req.params.id);
 		const currentUser = await User.findById(req.user._id);
 
-		// if target user followers include current user
-		const hasUserFollowed = user.followers.includes(req.user._id);
-		// can't follow yourself
+		const hasUserFollowed = contactUser.followers.includes(req.user._id);
+		// can't follow your following again
 		if (hasUserFollowed) {
-			// send 403 response
 			return res.status(403).json('you already follow this user');
 		}
 
-		// update target user followers
-		await user.updateOne({ $push: { followers: req.user._id } });
+		// update contact user followers
+		await contactUser.updateOne({ $push: { followers: req.user._id } });
 		// update current user followings
-		await currentUser.updateOne({
-			$push: { followings: req.params.id }
-		});
+		await currentUser.updateOne({ $push: { followings: req.params.id } });
 
-		// success response
-		res.status(200).json(`you follow ${user.username} successfully`);
+		res.status(200).json(`you follow ${contactUser.username} successfully`);
 	} catch (err) {
-		console.log(err);
-		return res.status(500).json(err);
+		expressErrHandler(err, next);
 	}
 };
 
-exports.unFollowUser = async (req, res) => {
+exports.unFollowUser = async (req, res, next) => {
 	try {
-		if (req.user._id.toString() !== req.params.id) {
-			const user = await User.findById(req.params.id);
-			const currentUser = await User.findById(req.user._id);
-
-			const hasUserFollowed = user.followers.includes(req.user._id);
-			if (hasUserFollowed) {
-				await user.updateOne({ $pull: { followers: req.user._id } });
-				await currentUser.updateOne({
-					$pull: { followings: req.params.id }
-				});
-				return res.status(200).json('user has been unfollowed');
-			} else {
-				console.log("you didn't follow this user");
-				return res.status(403).json("you didn't follow this user");
-			}
-		} else {
-			console.log("you can't unfollow yourself");
+		const isYourself = req.user._id.toString() === req.params.id;
+		if (isYourself) {
 			return res.status(403).json("you can't unfollow yourself");
 		}
-		/*
 		const user = await User.findById(req.params.id);
-		const { password, updatedAt, ...others } = user._doc;
-		res.status(200).json(others);
-		*/
+		const currentUser = await User.findById(req.user._id);
+
+		const hasUserFollowed = user.followers.includes(req.user._id);
+		if (!hasUserFollowed) {
+			return res.status(403).json("you didn't follow this user");
+		}
+
+		// delete user in contact user followes and current user followings
+		await user.updateOne({ $pull: { followers: req.user._id } });
+		await currentUser.updateOne({
+			$pull: { followings: req.params.id },
+		});
+		return res.status(200).json('user has been unfollowed');
 	} catch (err) {
-		console.log(err);
-		res.status(500).json(err);
+		expressErrHandler(err, next);
 	}
 };
 
-exports.getUserFollowings = async (req, res) => {
-	// get data
-	const { id } = req.params;
-
+exports.getUserFollowings = async (req, res, next) => {
+	const userId = req.params.id;
 	try {
 		// find user
-		const user = await User.findById(id).populate({
+		const user = await User.findById(userId).populate({
 			model: 'User',
 			path: 'followings',
-			select: 'username avatar'
+			select: 'username avatar',
 		});
 
 		const followings = user.followings;
-		// send user's followings
 		res.status(200).json(followings);
 	} catch (err) {
-		console.log(err);
-		res.status(500).json(err);
+		expressErrHandler(err, next);
 	}
 };

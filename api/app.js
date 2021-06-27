@@ -39,7 +39,7 @@ const storage = multer.diskStorage({
 			// 	file.originalname
 			// }`
 		);
-	}
+	},
 });
 const upload = multer({ storage });
 
@@ -51,25 +51,40 @@ app.use(morgan('common'));
 app.use(cookieParser());
 app.use('/images', express.static(path.join(__dirname, 'public', 'images')));
 
-app.post('/api/upload', verify, upload.single('file'), async(req, res) => {
+app.post('/api/upload', verify, upload.single('file'), async (req, res) => {
 	res.status(200).json('File uploaded');
 });
 
-app.post('/api/upload/avatar', verify, upload.single('file'), async(req, res) => {
-	req.user.avatar = req.file.filename
-	await req.user.save()
-	res.status(200).json('File uploaded');
-});
+app.post(
+	'/api/upload/avatar',
+	verify,
+	upload.single('file'),
+	async (req, res) => {
+		req.user.avatar = req.file.filename;
+		await req.user.save();
+		res.status(200).json('File uploaded');
+	}
+);
 
-app.post('/api/upload/cover', verify, upload.single('file'), async(req, res) => {
-	req.user.cover = req.file.filename
-	await req.user.save()
-	res.status(200).json('File uploaded');
-});
+app.post(
+	'/api/upload/cover',
+	verify,
+	upload.single('file'),
+	async (req, res) => {
+		req.user.cover = req.file.filename;
+		await req.user.save();
+		res.status(200).json('File uploaded');
+	}
+);
 app.use('/api/users', userRoute);
 app.use('/api/auth', authRoute);
 app.use('/api/posts', postRoute);
 app.use('/api/conversations', conversationRoute);
 app.use('/api/messages', messageRoute);
+
+app.use((error, req, res) => {
+	console.log(error);
+	res.status(500).json('500 something wrong in server');
+});
 
 module.exports = app;

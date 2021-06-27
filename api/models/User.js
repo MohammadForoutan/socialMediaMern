@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema(
@@ -10,100 +10,99 @@ const UserSchema = new Schema(
 			required: true,
 			min: 2,
 			max: 20,
-			unique: true
+			unique: true,
 		},
 		email: {
 			type: String,
 			required: true,
 			max: 50,
-			unique: true
+			unique: true,
 		},
 		password: {
 			type: String,
 			required: true,
 			min: 6,
-			max: 80
+			max: 80,
 		},
 		avatar: {
 			type: String,
-			default: ''
+			default: '',
 		},
 		cover: {
 			type: String,
-			default: ''
+			default: '',
 		},
 		followers: [
 			{
 				type: Schema.Types.ObjectId,
-				ref: 'User'
-			}
+				ref: 'User',
+			},
 		],
 		followings: [
 			{
 				type: Schema.Types.ObjectId,
-				ref: 'User'
-			}
+				ref: 'User',
+			},
 		],
 		isAdmin: {
 			type: Boolean,
-			default: false
+			default: false,
 		},
 		about: {
 			type: String,
-			max: 70
+			max: 70,
 		},
 		city: {
 			type: String,
-			max: 50
+			max: 50,
 		},
 		from: {
 			type: String,
-			max: 50
+			max: 50,
 		},
 		relationship: {
-			type: String
+			type: String,
 		},
 		tokens: [
 			{
 				type: String,
-				required: true
-			}
-		]
+				required: true,
+			},
+		],
 	},
 	/* model options */
 	{ timestamps: true }
 );
 
-
 // Hash the plain text password before saving
 UserSchema.pre('save', async function (next) {
-	const user = this
+	const user = this;
 
 	if (user.isModified('password')) {
-			const salt = await bcrypt.genSalt(12);
-			const hashedPassword = await bcrypt.hash(user.password, salt);
-			user.password = hashedPassword;
+		const salt = await bcrypt.genSalt(12);
+		const hashedPassword = await bcrypt.hash(user.password, salt);
+		user.password = hashedPassword;
 	}
 
-	next()
-})
-// generate jwt 
+	next();
+});
+// generate jwt
 UserSchema.methods.generateAuthToken = async function () {
 	const user = this;
 
 	// payload
 	const payload = {
-		_id: user._id.toString()
+		_id: user._id.toString(),
 	};
 
 	try {
 		// sign token
 		const token = await jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
-			expiresIn: process.env.ACCESS_TOKEN_LIFE
+			expiresIn: process.env.ACCESS_TOKEN_LIFE,
 		});
 
 		// save token
-		user.tokens = user.tokens.concat(token)
+		user.tokens = user.tokens.concat(token);
 		await user.save();
 
 		// return token
@@ -114,22 +113,26 @@ UserSchema.methods.generateAuthToken = async function () {
 };
 
 UserSchema.methods.logout = async function (currentSessionToken) {
-  const user = this;
-  user.tokens = user.tokens.filter(token => token !== currentSessionToken)
-  await user.save();
-}
+	const user = this;
+	user.tokens = user.tokens.filter((token) => token !== currentSessionToken);
+	await user.save();
+};
 
-UserSchema.methods.logoutAll = async function() {
-  try {
-    const user = this;
+UserSchema.methods.logoutAll = async function () {
+	try {
+		const user = this;
 
-    user.tokens = [];
-    await user.save();
-    
-  } catch (err) {
-    console.log(err);
-  }
-} 
+		user.tokens = [];
+		await user.save();
+	} catch (err) {
+		console.log(err);
+	}
+};
+
+UserSchema.methods.isOwner = function (userId, paramId) {
+	const user = this;
+	return userId.toString() === paramId.toString() || user.isAdmin;
+};
 const User = mongoose.model('User', UserSchema);
 
 module.exports = User;
