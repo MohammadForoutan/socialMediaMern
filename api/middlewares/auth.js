@@ -4,7 +4,7 @@ const User = require('../models/User');
 exports.verify = async (req, res, next) => {
 	let token = req.header('Authorization');
 	if (!token) {
-		return res.status(403).json({ error: 'token is not exist' });
+		return res.status(401).json({ error: 'token is not exist' });
 	}
 
 	token = token.replace('Bearer ', '');
@@ -19,7 +19,7 @@ exports.verify = async (req, res, next) => {
 		req.user = user;
 		next();
 	} catch (err) {
-		res.status(403).json('Forbidden!!!');
+		res.status(401).json('Forbidden!!!');
 		console.log(err);
 	}
 };
